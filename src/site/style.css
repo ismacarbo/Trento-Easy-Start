@@ -140,3 +140,74 @@ body.nav-active .nav {
     text-align: center;
 }
 
+.nav__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav__list-item {
+    margin: 20px 0;
+}
+
+.nav__list-item a {
+    font-size: 24px;
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav__list-item a:hover {
+    color: #8167a9;
+}
+
+/* Submenu */
+.submenu {
+    list-style: none;
+    padding: 10px 0 0 0;
+    margin: 0;
+}
+
+.submenu li {
+    margin: 10px 0;
+}
+
+.submenu li a {
+    font-size: 18px;
+    color: #c4c3ca;
+}
+
+.submenu li a:hover {
+    color: #8167a9;
+}
+
+/* Menu Icon Active State */
+body.nav-active .menu-icon__line {
+    background-color: #fff;
+    transform: translateY(12px) rotate(-45deg);
+}
+
+body.nav-active .menu-icon__line-left {
+    opacity: 0;
+}
+
+body.nav-active .menu-icon__line-right {
+    transform: translateY(-12px) rotate(45deg);
+}
+
+/* Evita la duplicazione della 'X' */
+.menu-icon__line-left,
+.menu-icon__line-right {
+    width: 30px;
+}
+
+/* Spostare il contenuto principale verso il basso quando il menu è attivo */
+body.nav-active .container {
+    transform: translateY(50px);
+    transition: transform 0.5s ease;
+}
+
+/* Container Principale */
+.container {
+    display: flex;
+    justify-content: center;
