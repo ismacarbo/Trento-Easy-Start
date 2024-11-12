@@ -69,3 +69,74 @@ a {
     position: relative;
     z-index: 1001;
     cursor: pointer;
+    display: block;
+}
+
+.menu-icon__line {
+    height: 2px;
+    width: 30px;
+    display: block;
+    background-color: #fff;
+    margin-bottom: 7px;
+    transition: background-color .5s ease, transform .2s ease;
+}
+
+.menu-icon__line-left {
+    width: 16.5px;
+    transition: all 200ms linear;
+}
+
+.menu-icon__line-right {
+    width: 16.5px;
+    float: right;
+    transition: all 200ms linear;
+}
+
+.menu-icon:hover .menu-icon__line-left,
+.menu-icon:hover .menu-icon__line-right {
+    width: 30px;
+}
+
+/* Destra: Multilingua */
+.multilingua {
+    display: flex;
+    gap: 10px;
+}
+
+.multilingua a {
+    color: #fff;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.multilingua a:hover {
+    color: #8167a9;
+}
+
+/* Menu a Tendina */
+.nav {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(9,9,12,0.95);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+body.nav-active .nav {
+    visibility: visible;
+    opacity: 1;
+}
+
+.nav__content {
+    position: absolute;
+    top: 100px;
+    left: 50px;
+    right: 50px;
+    text-align: center;
+}
+
