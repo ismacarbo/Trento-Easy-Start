@@ -1,0 +1,71 @@
+/* Stili Generali */
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #1f2029;
+    background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat-back.svg');
+    background-position: center;
+    background-repeat: repeat;
+    background-size: 4%;
+    overflow-x: hidden;
+    transition: all 300ms linear;
+    color: #fff; /* Imposta il colore del testo a bianco di default */
+}
+
+/* Link */
+a {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Header e Menu */
+.cd-header {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 0;
+}
+
+.header-wrapper {
+    width: calc(100% - 100px);
+    margin: 0 auto;
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Sinistra: Logo e Menu Icon */
+.left-side {
+    display: flex;
+    align-items: center;
+}
+
+.logo-wrap {
+    margin-left: 20px;
+}
+
+.logo-wrap a {
+    font-weight: 900;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    transition: all 0.3s ease-out;
+}
+
+.logo-wrap a span {
+    color: #8167a9;
+}
+
+/* Menu Icon */
+.menu-icon {
+    height: 30px;
+    width: 30px;
+    position: relative;
+    z-index: 1001;
+    cursor: pointer;
