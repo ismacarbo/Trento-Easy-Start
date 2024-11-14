@@ -264,3 +264,56 @@ body.nav-active .container {
 /* Container Principale */
 .container {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 150px;
+    transition: transform 0.5s ease;
+}
+
+/* Form di Login e Registrazione */
+.form-container {
+    position: relative;
+    width: 350px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 50px;
+    padding: 40px;
+}
+
+.form-container .login,
+.form-container .register {
+    display: none;
+}
+
+.form-container .login.active,
+.form-container .register.active {
+    display: block;
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container form input,
+.form-container form select,
+.form-container form textarea {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #000;
+    font-size: 14px;
+}
+
+.form-container form input::placeholder,
+.form-container form select::placeholder,
