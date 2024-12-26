@@ -1,4 +1,4 @@
-// trentoeasystart-backend/server.js
+
 
 const express = require('express');
 const http = require('http');
@@ -10,38 +10,38 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const Message = require('./models/Message.js');
 
-// Swagger UI imports
+
 const swaggerUi = require('swagger-ui-express');
 const fs = require('fs');
 const yaml = require('js-yaml');
 
-// Importa e configura il client di Cohere
+
 const { CohereClient } = require('cohere-ai');
 
-// Carica le variabili d'ambiente
+
 dotenv.config();
 
-// Connessione a MongoDB
+
 connectDB();
 
-// Carica il file oas3.yaml dalla cartella swagger_code
+
 const swaggerDocument = yaml.load(fs.readFileSync(path.join(__dirname, '../swagger_code', 'oas3.yaml'), 'utf8'));
 
-// Configura il client di Cohere
+
 const cohere = new CohereClient({
   token: process.env.COHERE_API_KEY,
 });
 
 const app = express();
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
-// Swagger UI setup
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Importa le rotte
+
 const authRoutes = require('./routes/auth.js');
 const accommodationsRoutes = require('./routes/accommodations.js');
 const contactRoutes = require('./routes/contact.js');
@@ -50,7 +50,7 @@ const newsRoutes = require('./routes/news.js');
 const eventsRoutes = require('./routes/events.js');
 const servicesRoutes = require('./routes/services.js');
 
-// Utilizza le rotte
+
 app.use('/api/auth', authRoutes);
 app.use('/api/accommodations', accommodationsRoutes);
 app.use('/api/contact', contactRoutes);
@@ -59,24 +59,24 @@ app.use('/api/news', newsRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/services', servicesRoutes);
 
-// Servi i file statici del frontend
+
 app.use(express.static(path.join(__dirname, '../trentoeasystart-frontend')));
 
-// Gestisci tutte le altre richieste con il frontend
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../trentoeasystart-frontend/main.html'));
 });
 
-// Crea il server HTTP e Socket.io
+
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: "http://localhost:5000",
+    origin: "http:
     methods: ["GET", "POST"]
   }
 });
 
-// Middleware di Socket.io per l'autenticazione
+
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
   if (!token) {
@@ -92,7 +92,7 @@ io.use((socket, next) => {
   }
 });
 
-// Gestione delle connessioni Socket.io
+
 io.on('connection', async (socket) => {
   console.log('New client connected:', socket.id, 'User:', socket.user);
 
