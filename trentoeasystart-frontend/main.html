@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Trento Easy Start - Home</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <script src="/socket.io/socket.io.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+
+    <body>
+        <header class="cd-header">
+            <div class="header-wrapper">
+                <div class="left-side">
+                    <div class="menu-icon hover-target">
+                        <span class="menu-icon__line menu-icon__line-left"></span>
+                        <span class="menu-icon__line"></span>
+                        <span class="menu-icon__line menu-icon__line-right"></span>
+                    </div>
+                    <div class="logo-wrap">
+                        <a href="main.html" class="hover-target"><span>Trento</span>Easy Start</a>
+                    </div>
+                </div>
+                <div class="multilingua">
+                    <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
+                    <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
+                    <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
+                    <span id="auth-links"></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="nav">
+            <div class="nav__content">
+                <ul class="nav__list">
+                    <li class="nav__list-item"><a href="main.html" class="hover-target">Home</a></li>
+                    <li class="nav__list-item">
+                        <a href="cerca-alloggio.html" class="hover-target">Cerca Alloggio</a>
+                    </li>
+                    <li class="nav__list-item">
+                        <a href="supporto.html" class="hover-target">Supporto</a>
+                    </li>
+                    <li class="nav__list-item"><a href="servizi.html" class="hover-target">Servizi</a></li>
+                    <li class="nav__list-item"><a href="eventi.html" class="hover-target">Eventi</a></li>
+                    <li class="nav__list-item"><a href="chi-siamo.html" class="hover-target">Chi Siamo</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+            <section class="home-section">
+                <h1 style="color:#5ea813;">Benvenuto su Trento Easy Start!</h1>
+                <div class="user-info">
+                    <p><strong style="color:#5ea813;">Nome:</strong> <span id="user-name">Caricamento...</span></p>
+                    <p><strong style="color:#5ea813;">Email:</strong> <span id="user-email">Caricamento...</span></p>
+                </div>
+
+                <div class="welcome-message">
+                    <p>Grazie per esserti registrato! Esplora le nostre funzionalità per ambientarti a Trento.
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <div id="chat-button" class="chat-button">
+            <i class="fas fa-comments"></i>
+        </div>
+
+        <div id="chat-window" class="chat-window hidden">
+            <div class="chat-header">
+                <h3>Supporto Live</h3>
+                <span id="close-chat" class="close-chat">&times;</span>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="message" placeholder="Scrivi un messaggio..." autocomplete="off" required>
+                <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="script.js"></script>
+
+        <footer>
+            <p>&copy; <span id="current-year"></span> Trento Easy Start. Tutti i diritti riservati.</p>
+        </footer>
+    </body>
+</html>
