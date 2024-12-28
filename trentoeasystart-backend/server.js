@@ -71,10 +71,11 @@ app.get('*', (req, res) => {
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: "http:
+    origin: "http://localhost:5000", // Replace with your actual origin
     methods: ["GET", "POST"]
   }
 });
+
 
 
 io.use((socket, next) => {
