@@ -1,0 +1,36 @@
+{
+  "name": "trento-easy-start",
+  "version": "1.0.0",
+  "description": "## Introduzione al Progetto Il progetto **Trento Easy Start** è pensato per fornire una piattaforma digitale di facile utilizzo, dedicata ai nuovi residenti della città di Trento. La piattaforma mira a semplificare l'accesso ai servizi essenziali e aiutare i nuovi arrivati a orientarsi tra le procedure burocratiche e le opportunità offerte dal Comune. Sarà accessibile via browser e disponibile in diverse lingue (Italiano, Inglese, Tedesco) per promuovere l'inclusione e migliorare l'esperienza utente.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ismacarbo/Trento-Easy-Start.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ismacarbo/Trento-Easy-Start/issues"
+  },
+  "homepage": "https://github.com/ismacarbo/Trento-Easy-Start#readme",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
+    "cohere-ai": "^7.15.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.4",
+    "nodemailer": "^6.9.16",
+    "socket.io": "^4.8.1",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

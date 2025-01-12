@@ -468,6 +468,21 @@ body.nav-active .container {
     margin-bottom: 10px;
 }
 
+.admin-button, .view-users, .view-chart {
+    background-color: #5ea813;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.admin-button:hover, .view-users:hover, .view-chart:hover {
+    background-color: #4c871c;
+}
+
 .accommodation-item .btn {
     padding: 8px 16px;
     background: #4c871c;
@@ -716,7 +731,6 @@ body.nav-active .container {
     font-weight: bold;
 }
 
-/* Responsive design for small screens */
 @media (max-width: 768px) {
     .search-form input[type="text"],
     .search-form input[type="number"],
@@ -725,15 +739,11 @@ body.nav-active .container {
     }
 }
 
-
-
-/* Rimozione delle bande bianche */
 .header-wrapper, .nav__content, .nav__list, .nav__list-item, .logo-wrap, .left-side, .multilingua {
     margin: 0;
     padding: 0;
 }
 
-/* Eliminazione margini e padding indesiderati */
 .news-list, .events-list {
     margin: 0;
     padding: 0;
@@ -745,22 +755,18 @@ body.nav-active .container {
 }
 
 .news-item {
-    border: none; /* Rimuove i bordi se presenti */
+    border: none;
 }
 
-/* Specifiche per la Sezione Notizie */
-
-/* Rimuovere il background chiaro della sezione Notizie */
 .news-section {
-    background-color: transparent; /* Rende lo sfondo trasparente */
-    padding: 20px 0; /* Mantiene un po' di padding verticale */
+    background-color: transparent; 
+    padding: 20px 0; 
 }
 
-/* Modificare lo stile degli elementi Notizie */
 .news-item {
-    background-color: rgba(31, 32, 41, 0.8); /* Sfondo semi-trasparente scuro */
-    border: none; /* Rimuove i bordi */
-    box-shadow: none; /* Rimuove l'ombra */
+    background-color: rgba(31, 32, 41, 0.8);
+    border: none; 
+    box-shadow: none; 
 }
 
 .directions-form {
