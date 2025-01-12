@@ -17,8 +17,8 @@ env:
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
   COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
-  EMAIL_USER: ${{ secrets.COHERE_API_KEY }}
-  EMAIL_PASS: ${{ secrets.COHERE_API_KEY }}
+  EMAIL_USER: ${{ secrets.EMAIL_USER }}      
+  EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
 
 jobs:
   test:
