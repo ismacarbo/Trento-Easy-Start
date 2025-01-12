@@ -337,6 +337,22 @@ body.nav-active .container {
     color: #4c871c;
 }
 
+.admin-button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #8167a9;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.admin-button:hover {
+    background: #6a11cb;
+}
+
+/* Sezioni Specifiche */
 .support-section,
 .contact-section,
 .services-section,
@@ -682,6 +698,69 @@ body.nav-active .container {
 .details:hover {
     background-color: #4c871c; 
     transform: scale(1.05);
+}
+
+.search-section h1{
+    text-align: center;
+    font-size: 2rem;
+    color: #eeebeb;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.search-results h2{
+    text-align: center;
+    font-size: 1.5rem;
+    color: #eeebeb;
+    margin-top: 30px;
+    font-weight: bold;
+}
+
+/* Responsive design for small screens */
+@media (max-width: 768px) {
+    .search-form input[type="text"],
+    .search-form input[type="number"],
+    .search-form button {
+        width: 100%;
+    }
+}
+
+
+
+/* Rimozione delle bande bianche */
+.header-wrapper, .nav__content, .nav__list, .nav__list-item, .logo-wrap, .left-side, .multilingua {
+    margin: 0;
+    padding: 0;
+}
+
+/* Eliminazione margini e padding indesiderati */
+.news-list, .events-list {
+    margin: 0;
+    padding: 0;
+}
+
+.news-list .news-item, .events-list .event-item {
+    margin: 0;
+    padding: 0;
+}
+
+.news-item {
+    border: none; /* Rimuove i bordi se presenti */
+}
+
+/* Specifiche per la Sezione Notizie */
+
+/* Rimuovere il background chiaro della sezione Notizie */
+.news-section {
+    background-color: transparent; /* Rende lo sfondo trasparente */
+    padding: 20px 0; /* Mantiene un po' di padding verticale */
+}
+
+/* Modificare lo stile degli elementi Notizie */
+.news-item {
+    background-color: rgba(31, 32, 41, 0.8); /* Sfondo semi-trasparente scuro */
+    border: none; /* Rimuove i bordi */
+    box-shadow: none; /* Rimuove l'ombra */
 }
 
 .directions-form {
@@ -1039,6 +1118,7 @@ footer p {
     color: #4c871c;
     text-decoration: underline;
 }
+
 
 .feedback-section {
     padding: 40px 20px;

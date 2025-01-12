@@ -1,4 +1,5 @@
-(function ($) {
+
+(function($) { 
     "use strict";
 
     var app = function () {
@@ -14,7 +15,8 @@
                 e.stopPropagation();
                 return toggleClass(body, 'nav-active');
             });
-            document.addEventListener('click', function (e) {
+            // Chiudere il menu se si clicca fuori
+            document.addEventListener('click', function(e) {
                 if (body.classList.contains('nav-active') && !menu.contains(e.target)) {
                     body.classList.remove('nav-active');
                 }
@@ -30,8 +32,10 @@
         init();
     }();
 
+    // Funzione per ottenere i dati dell'utente (solo in pagine protette)
     const protectedPages = [
         'main.html',
+        'index.html',
         'cerca-alloggio.html',
         'accommodation.html',
         'eventi.html',
@@ -39,19 +43,23 @@
         'servizi.html',
         'trasporti.html',
         'sanita.html',
-        'educazione.html'
+        'educazione.html',
+        'admin-dashboard.html'
     ];
 
-    if (protectedPages.some(page => window.location.pathname.endsWith(page))) {
+    if (protectedPages.some(page => window.location.pathname.endsWith(page))) { 
         getUserData();
     }
 
+    // Funzione per ottenere i dati dell'utente
     async function getUserData() {
         const token = localStorage.getItem('token');
         if (!token) {
+            // Solo per le pagine protette, reindirizza se non autenticato
             const currentPage = window.location.pathname.split('/').pop();
             const requireAuth = [
                 'main.html',
+                'index.html',
                 'cerca-alloggio.html',
                 'accommodation.html',
                 'eventi.html',
@@ -63,16 +71,8 @@
             ];
 
             if (requireAuth.includes(currentPage)) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Autenticazione Necessaria',
-                    text: 'Devi effettuare il login per accedere a questa pagina.',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#5ea813',
-                    confirmButtonHover: '#4c871c'
-                }).then(() => {
-                    window.location.href = 'index.html';
-                });
+                alert('Devi effettuare il login per accedere a questa pagina.');
+                window.location.href = '/';
             }
             return;
         }
@@ -89,6 +89,7 @@
             const data = await res.json();
 
             if (res.ok) {
+
                 if (window.location.pathname.endsWith('main.html')) {
                     $('#user-name').text(data.name);
                     $('#user-email').text(data.email);
@@ -97,7 +98,15 @@
                     $('#user-name-index').text(data.name);
                     $('#user-email-index').text(data.email);
                 }
+                if (window.location.pathname.endsWith('admin-dashboard.html')) {
+                    $('#user-name-admin').text(data.name);
+                    $('#user-email-admin').text(data.email);
+                }
+
+                return data;
             } else {
+                alert(data.msg || 'Errore durante il recupero dei dati utente');
+                window.location.href = '/';
                 Swal.fire({
                     icon: 'error',
                     title: 'Errore',
@@ -106,7 +115,7 @@
                     confirmButtonColor: '#5ea813',
                     confirmButtonHover: '#4c871c'
                 }).then(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/';
                 });
             }
         } catch (err) {
@@ -119,7 +128,7 @@
                 confirmButtonColor: '#5ea813',
                 confirmButtonHover: '#4c871c'
             }).then(() => {
-                window.location.href = 'login.html';
+                window.location.href = '/';
             });
         }
     }
@@ -151,7 +160,7 @@
                     confirmButtonColor: '#5ea813',
                     confirmButtonHover: '#4c871c'
                 }).then(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/';
                 });
                 return;
             }
@@ -235,7 +244,7 @@
                     confirmButtonColor: '#5ea813',
                     confirmButtonHover: '#4c871c'
                 }).then(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/';
                 });
                 return;
             }
@@ -255,7 +264,9 @@
             const events = await res.json();
             console.log('Eventi ricevuti:', events);
 
+            // Filtra gli eventi con data futura o uguale a oggi
             const today = new Date();
+            // Imposta l'ora a 00:00:00 per confronto solo sulla data
             today.setHours(0, 0, 0, 0);
 
             const filteredEvents = events.filter(event => {
@@ -279,6 +290,7 @@
         }
     }
 
+    // Funzione per visualizzare gli eventi nella pagina (centralizzata)
     function displayEvents(events) {
         const eventsList = $('#events-list');
         eventsList.empty();
@@ -315,22 +327,6 @@
     $(document).ready(function () {
         updateAuthUI();
 
-        $(document).on('click', '#logout', function (e) {
-            e.preventDefault();
-            localStorage.removeItem('token');
-            Swal.fire({
-                icon: 'success',
-                title: 'Disconnesso',
-                text: 'Sei stato disconnesso.',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#5ea813',
-                confirmButtonHover: '#4c871c'
-            }).then(() => {
-                updateAuthUI();
-                window.location.href = 'index.html';
-            });
-        });
-
         $('#show-register').on('click', function (e) {
             e.preventDefault();
             $('.login').removeClass('active');
@@ -355,12 +351,13 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password})
                 });
 
                 const data = await res.json();
 
                 if (res.ok) {
+                    // Salva il token nel localStorage
                     localStorage.setItem('token', data.token);
                     Swal.fire({
                         icon: 'success',
@@ -371,8 +368,14 @@
                         confirmButtonHover: '#4c871c'
                     }).then(() => {
                         updateAuthUI();
-                        window.location.href = 'main.html';
+                        if (data.role == 'user'){
+                            window.location.href = 'main.html';
+                        }
+                        else {
+                            window.location.href = 'admin-dashboard.html';
+                        }
                     });
+                    
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -438,20 +441,94 @@
                 }
             } catch (err) {
                 console.error(err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Errore',
-                    text: 'Errore durante la registrazione.',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#5ea813',
-                    confirmButtonHover: '#4c871c'
-                });
+                alert('Errore durante la registrazione.');
             }
         });
+
+        // Gestione del Logout
+        $('#logout').on('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            Swal.fire({
+                icon: 'success',
+                title: 'Disconnesso',
+                text: 'Sei stato disconnesso.',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#5ea813',
+                confirmButtonHover: '#4c871c'
+            }).then(() => {
+                updateAuthUI();
+                window.location.href = '/';
+            });
+        });
+    });
+
+
+    // Live Chat Admin dashboard e email support
+    $(document).ready(function() {
+
+        if (window.location.pathname.endsWith('chi-siamo.html')){
+            $('#feedback-form').on('submit', async function(e){
+                e.preventDefault();
+
+                const name = $('#name').val();
+                const subject = $("#subject").val();
+                const email = $('#email').val();
+                const message = $('#message').val();
+
+                if (!name || !subject || !email || !message){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Completa tutti i campi',
+                        text: 'Completa tutti i campi e inserendo valori validi',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    });
+                }
+
+                const res = await fetch('/api/contact/', {
+                    method:'POST',
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, subject, message })
+                });
+
+                if (res.ok){
+                    const data = await res.json();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Messaggio inviato',
+                        text: data.msg,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    });
+
+                    $('#name').val('');
+                    $('#email').val('');
+                    $('#subject').val('');
+                    $('#message').val('');
+                }
+                else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errore nell\'invio del messaggio',
+                        text: 'Si è verifiato un errore durante l\'invio del message, Riprova.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    });
+                } 
+            });
+        }
 
         if (window.location.pathname.endsWith('main.html') && $('#chat-window').length) {
             const token = localStorage.getItem('token');
             if (!token) {
+                alert('Devi effettuare il login per accedere alla chat.');
+                window.location.href = '/';
                 Swal.fire({
                     icon: 'warning',
                     title: 'Autenticazione Necessaria',
@@ -460,11 +537,12 @@
                     confirmButtonColor: '#5ea813',
                     confirmButtonHover: '#4c871c'
                 }).then(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/';
                 });
                 return;
             }
 
+            // Inizializza Socket.io con autenticazione
             const socket = io({
                 auth: {
                     token: token
@@ -481,9 +559,10 @@
                     confirmButtonColor: '#5ea813',
                     confirmButtonHover: '#4c871c'
                 }).then(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/';
                 });
             });
+
 
             $('#send-button').on('click', function () {
                 const userMessage = $('#message').val().trim();
@@ -504,6 +583,7 @@
 
                 socket.emit('chatMessage', message);
 
+                // Pulisci il campo di input del messaggio
                 $('#message').val('');
             });
 
@@ -521,6 +601,7 @@
                         <span class="text">${msg.text}</span>
                     </div>
                 `);
+                // Scrolla automaticamente in fondo
                 $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
             });
 
@@ -537,6 +618,308 @@
             $('#close-chat').on('click', function () {
                 $('#chat-window').removeClass('visible').addClass('hidden');
             });
+        }
+
+        else if(window.location.pathname.endsWith('admin-dashboard.html')){
+            $('#admin-create').on('click', function() {
+                $('#result').html(
+                `<div id="result">
+                    <h3>Crea un Nuovo Amministratore</h3>
+                    <form id="create-admin-form">
+                        <input type="text" id="admin-name" placeholder="Nome" required>
+                        <input type="email" id="admin-email" placeholder="Email" required>
+                        <input type="password" id="admin-password" placeholder="Password" required>
+                        <button type="submit" id="create-admin-btn">Crea</button>
+                    </form>
+                </div>
+                `) ;
+
+            $('#create-admin-form').on('submit', async function (e){
+                e.preventDefault();
+                
+                const name = $('#admin-name').val();
+                const email = $('#admin-email').val();
+                const password = $('#admin-password').val();
+        
+                var res = await fetch('/api/auth/createAdmin', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json', 'x-auth-token': localStorage.getItem('token')},
+                    body: JSON.stringify({name, email, password})
+                    })
+
+                if (res.ok){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Creazione Admin Completata',
+                        text: 'Registrazione admin ' + email + 'effettuata con successo',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    })
+                }
+                else {
+                    let data = await res.json();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Creazione Admin Fallita',
+                        text: data.msg,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    })
+                }
+                });
+            });
+            
+            $('#view').on('click', async function (){
+                try {
+                    const token = localStorage.getItem('token'); // Get the token
+                    const res = await fetch('/api/auth/users', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': token
+                        }
+                    });
+    
+                    const data = await res.json();
+                    if (res.ok) {
+                        // Display users in the #result container
+                        displayUsers(data);
+                    } else {
+                        alert(data.msg || 'Errore durante il recupero degli utenti.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Errore durante il recupero degli utenti.');
+                }
+            });
+
+
+            $('#view-users').on('click', async function (){
+                try {
+                    const token = localStorage.getItem('token'); // Get the token
+                    const res = await fetch('/api/auth/users', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': token
+                        }
+                    });
+    
+                    const data = await res.json();
+                    if (res.ok) {
+                        displayUsers(data);
+                    } else {
+                        alert(data.msg || 'Errore durante il recupero degli utenti.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Errore durante il recupero degli utenti.');
+                }
+            });
+
+            $('#view-chart').on('click', async function () {
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch('/api/auth/users/stats', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': token
+                        }
+                    });
+        
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        renderChart(data);
+                    } else {
+                        alert(data.msg || 'Errore durante il recupero delle statistiche.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Errore durante il recupero delle statistiche.');
+                }
+            });
+
+
+            function renderChart(data) {
+                const chartContainer = `
+                    <div>
+                        <h3>Grafico degli Utenti Iscritti</h3>
+                        <select id="time-range">
+                            <option value="7">Ultima Settimana</option>
+                            <option value="30">Ultimo Mese</option>
+                            <option value="365">Ultimo Anno</option>
+                        </select>
+                        <canvas id="registration-chart"></canvas>
+                    </div>
+                `;
+                $('#result').html(chartContainer);
+        
+                function generateRange(range, interval = 'day') {
+                    const today = new Date();
+                    const rangeArray = [];
+                    const startDate = new Date(today);
+            
+                    if (interval === 'day') {
+                        startDate.setDate(today.getDate() - range + 1);
+                        while (startDate <= today) {
+                            rangeArray.push(startDate.toISOString().split('T')[0]); // YYYY-MM-DD
+                            startDate.setDate(startDate.getDate() + 1);
+                        }
+                    } else if (interval === 'month') {
+                        startDate.setMonth(today.getMonth() - (range / 30 - 1));
+                        startDate.setDate(1);
+                        while (startDate <= today) {
+                            const year = startDate.getFullYear();
+                            const month = String(startDate.getMonth() + 1).padStart(2, '0');
+                            rangeArray.push(`${year}-${month}`); // YYYY-MM
+                            startDate.setMonth(startDate.getMonth() + 1);
+                        }
+                    }
+            
+                    return rangeArray;
+                }
+            
+                // Function to group data and fill missing dates or months
+                function groupData(data, range) {
+                    const isYear = range === 365;
+                    const fullRange = generateRange(range, isYear ? 'month' : 'day');
+            
+                    const grouped = {};
+                    data.forEach(item => {
+                        const date = new Date(item._id);
+                        let key = isYear
+                            ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` // YYYY-MM
+                            : item._id; // YYYY-MM-DD
+                        grouped[key] = (grouped[key] || 0) + item.count;
+                    });
+            
+                    const labels = fullRange;
+                    const values = labels.map(label => grouped[label] || 0);
+            
+                    return { labels, values };
+                }
+            
+                // Filter data based on the selected time range
+                function filterData(range) {
+                    const today = new Date();
+                    const filtered = data.filter(d => {
+                        const registrationDate = new Date(d._id);
+                        const diffInDays = (today - registrationDate) / (1000 * 60 * 60 * 24);
+                        return diffInDays <= range;
+                    });
+            
+                    return groupData(filtered, range);
+                }
+        
+                // Draw chart
+                function drawChart(filteredData, range) {
+                    const ctx = document.getElementById('registration-chart').getContext('2d');
+                    if (window.registrationChart) window.registrationChart.destroy(); // Destroy the old chart
+                    window.registrationChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: filteredData.labels,
+                            datasets: [{
+                                label: 'Numero di Iscritti',
+                                data: filteredData.values,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderWidth: 2,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    title: { display: true, text: range === 365 ? 'Mese' : 'Data' }
+                                },
+                                y: {
+                                    title: { display: true, text: 'Numero di Utenti' },
+                                    beginAtZero: true,
+                                    ticks: {
+                                            stepSize: 1,
+                                            callback: function(value) {
+                                                return Number.isInteger(value) ? value : null;
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    } );
+                }
+
+                drawChart(filterData(7), 7);
+
+                $('#time-range').on('change', function () {
+                    const range = parseInt($(this).val());
+                    drawChart(filterData(range), range);
+                });
+            }
+
+            function displayUsers(users) {
+                let table = `
+                    <h3>Elenco Utenti</h3>
+                    <table border="1" cellpadding="10">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Ruolo</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                users.forEach(user => {
+                    table += `
+                        <tr>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.role}</td>
+                            <td><button class="remove-user-btn" data-email="${user.email}">Rimuovi</button></td>
+
+                        </tr>
+                    `;
+                });
+                table += `
+                        </tbody>
+                    </table>
+                `;
+                $('#result').html(table);
+
+
+                // Rimuovi utente
+                $('.remove-user-btn').on('click', async function () {
+                    const userEmail = $(this).data('email');
+                    if (confirm(`Sei sicuro di voler eliminare l'utente ${userEmail}?`)) {
+                        try {
+                            const token = localStorage.getItem('token');
+                            const res = await fetch(`/api/auth/users/${userEmail}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-auth-token': token
+                                }
+                            });
+
+                            const data = await res.json();
+                            if (res.ok) {
+                                alert(data.msg || 'Utente eliminato con successo.');
+                                $('#view-users').click(); // Refresh the users list
+                            } else {
+                                alert(data.msg || 'Errore durante l\'eliminazione dell\'utente.');
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            alert('Errore durante l\'eliminazione dell\'utente.');
+                        }
+                    }
+                });
+            }
         }
     });
 
@@ -684,7 +1067,6 @@
             }
             return formatted.trim();
         }
-      
     });
 
     document.addEventListener('DOMContentLoaded', function () {

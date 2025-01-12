@@ -33,7 +33,7 @@ exports.sendContact = async (req, res) => {
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error(error);
-                return res.status(500).send('Errore nell\'invio dell\'email');
+                return res.status(500).json({msg: 'Errore nell\'invio dell\'email'});
             } else {
                 console.log('Email inviata: ' + info.response);
                 res.json({ msg: 'Messaggio inviato con successo' });

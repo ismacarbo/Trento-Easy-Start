@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Trento Easy Start - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Socket.io Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+    <!-- Menu di Navigazione -->
+    <header class="cd-header">
+        <div class="header-wrapper">
+            <!-- Sinistra: Logo e Menu Icon -->
+            <div class="left-side">
+                <div class="menu-icon hover-target">
+                    <span class="menu-icon__line menu-icon__line-left"></span>
+                    <span class="menu-icon__line"></span>
+                    <span class="menu-icon__line menu-icon__line-right"></span>
+                </div>
+                <div class="logo-wrap">
+                    <a href="main.html" class="hover-target"><span>Trento</span>Easy Start</a>
+                </div>
+            </div>
+            <!-- Destra: Multilingua e Logout -->
+            <div class="multilingua">
+                <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
+                <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
+                <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
+                <a href="#" id="logout" class="hover-target">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu a Tendina -->
+    <div class="nav">
+        <div class="nav__content">
+            <ul class="nav__list">
+                <li class="nav__list-item active-nav"><a href="main.html" class="hover-target">Home</a></li>
+                <li class="nav__list-item">
+                    <a href="cerca-alloggio.html" class="hover-target">Cerca Alloggio</a>
+                    <ul class="submenu">
+                        <li><a href="cerca-alloggio.html#breve">Affitti Brevi</a></li>
+                        <li><a href="cerca-alloggio.html#lungo">Affitti Lunghi</a></li>
+                        <li><a href="cerca-alloggio.html#vacanza">Case Vacanza</a></li>
+                    </ul>
+                </li>
+                <li class="nav__list-item">
+                    <a href="supporto.html" class="hover-target">Supporto</a>
+                    <ul class="submenu">
+                        <li><a href="supporto.html#faq">FAQ</a></li>
+                        <li><a href="supporto.html#assistenza">Assistenza Clienti</a></li>
+                        <li><a href="supporto.html#guide">Guide Utili</a></li>
+                    </ul>
+                </li>
+                <li class="nav__list-item"><a href="contatti.html" class="hover-target">Contatti</a></li>
+                <li class="nav__list-item"><a href="servizi.html" class="hover-target">Servizi</a></li>
+                <li class="nav__list-item"><a href="eventi.html" class="hover-target">Eventi</a></li>
+                <li class="nav__list-item"><a href="notizie.html" class="hover-target">Notizie</a></li>
+                <li class="nav__list-item"><a href="chi-siamo.html" class="hover-target">Chi Siamo</a></li>
+                <li class="nav__list-item"><a href="chat.html" class="hover-target">Live Chat</a></li> <!-- Aggiungi questa riga se desideri una pagina separata -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Contenuto Principale della Home Page -->
+    <div class="container">
+        <section class="home-section">
+            <h1>Benvenuto su Trento Easy Start!</h1>
+            <div class="user-info">
+                <h2>I Tuoi Dati</h2>
+                <p><strong>Nome:</strong> <span id="user-name-admin">Caricamento...</span></p>
+                <p><strong>Email:</strong> <span id="user-email-admin">Caricamento...</span></p>
+            </div>
+
+            <button id="admin-create" class="admin-button">Create Admin</button>
+            <button id="view-users" class="admin-button">View Users</button>
+            <button id="view-chart" class="admin-button">View Chart</button>
+            
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+
+            <div id="result"></div>
+        </section>
+    </div>
+
+
+    <!-- Script per il Menu, Logout, Fetch dei Dati Utente e Live Chat -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
