@@ -1,6 +1,8 @@
-
 (function($) { 
     "use strict";
+
+    // Variabile globale per memorizzare il ruolo dell'utente
+    let userRole = null;
 
     var app = function () {
         var body = undefined;
@@ -54,9 +56,10 @@
     // Funzione per ottenere i dati dell'utente
     async function getUserData() {
         const token = localStorage.getItem('token');
+        const currentPage = window.location.pathname.split('/').pop();
+
         if (!token) {
             // Solo per le pagine protette, reindirizza se non autenticato
-            const currentPage = window.location.pathname.split('/').pop();
             const requireAuth = [
                 'main.html',
                 'index.html',
@@ -67,12 +70,21 @@
                 'servizi.html',
                 'trasporti.html',
                 'sanita.html',
-                'educazione.html'
+                'educazione.html',
+                'admin-dashboard.html'
             ];
 
             if (requireAuth.includes(currentPage)) {
-                alert('Devi effettuare il login per accedere a questa pagina.');
-                window.location.href = '/';
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Autenticazione Necessaria',
+                    text: 'Devi effettuare il login per accedere a questa pagina.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#5ea813',
+                    confirmButtonHover: '#4c871c'
+                }).then(() => {
+                    window.location.href = '/';
+                });
             }
             return;
         }
@@ -90,6 +102,8 @@
 
             if (res.ok) {
 
+                userRole = data.role; // Salva il ruolo dell'utente
+
                 if (window.location.pathname.endsWith('main.html')) {
                     $('#user-name').text(data.name);
                     $('#user-email').text(data.email);
@@ -103,10 +117,24 @@
                     $('#user-email-admin').text(data.email);
                 }
 
+                updateNavMenu(); // Aggiorna il menu di navigazione in base al ruolo
+
+                // **Nuova Aggiunta**: Controllo di accesso per Admin Dashboard
+                if (currentPage === 'admin-dashboard.html' && userRole !== 'admin') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Accesso Negato',
+                        text: 'Non sei autorizzato ad accedere a questa pagina.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    }).then(() => {
+                        window.location.href = '/';
+                    });
+                }
+
                 return data;
             } else {
-                alert(data.msg || 'Errore durante il recupero dei dati utente');
-                window.location.href = '/';
                 Swal.fire({
                     icon: 'error',
                     title: 'Errore',
@@ -130,6 +158,23 @@
             }).then(() => {
                 window.location.href = '/';
             });
+        }
+    }
+
+    // Funzione per aggiornare il menu di navigazione in base al ruolo dell'utente
+    function updateNavMenu() {
+        const navList = $('.nav__list');
+        
+        // Rimuovi eventuali link precedenti all'Admin Dashboard per evitare duplicati
+        navList.find('.admin-dashboard-link').remove();
+
+        if (userRole === 'admin') {
+            const adminLink = `
+                <li class="nav__list-item admin-dashboard-link">
+                    <a href="admin-dashboard.html" class="hover-target">Admin Dashboard</a>
+                </li>
+            `;
+            navList.append(adminLink);
         }
     }
 
@@ -315,30 +360,46 @@
 
     function updateAuthUI() {
         const token = localStorage.getItem('token');
-        const authLinks = $('#auth-links');
+        const authLinks = $('.multilingua');
 
         authLinks.empty();
 
         if (token) {
-            authLinks.append(' | <a href="#" id="logout" class="hover-target">Logout</a>');
+            authLinks.append(`
+                <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
+                <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
+                <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
+                | <a href="#" id="logout" class="hover-target">Logout</a>
+            `);
+        } else {
+            authLinks.append(`
+                <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
+                <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
+                <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
+                | <a href="#" id="show-login" class="hover-target">Login</a>
+                | <a href="#" id="show-register" class="hover-target">Registrati</a>
+            `);
         }
     }
 
     $(document).ready(function () {
         updateAuthUI();
 
-        $('#show-register').on('click', function (e) {
+        // Mostra la sezione di registrazione
+        $(document).on('click', '#show-register', function (e) {
             e.preventDefault();
             $('.login').removeClass('active');
             $('.register').addClass('active');
         });
 
-        $('#show-login').on('click', function (e) {
+        // Mostra la sezione di login
+        $(document).on('click', '#show-login', function (e) {
             e.preventDefault();
             $('.register').removeClass('active');
             $('.login').addClass('active');
         });
 
+        // Gestione del form di login
         $('#login-form').on('submit', async function (e) {
             e.preventDefault();
 
@@ -359,6 +420,7 @@
                 if (res.ok) {
                     // Salva il token nel localStorage
                     localStorage.setItem('token', data.token);
+                    userRole = data.role; // Salva il ruolo dell'utente
                     Swal.fire({
                         icon: 'success',
                         title: 'Login Effettuato',
@@ -368,7 +430,8 @@
                         confirmButtonHover: '#4c871c'
                     }).then(() => {
                         updateAuthUI();
-                        if (data.role == 'user'){
+                        updateNavMenu(); // Aggiorna il menu di navigazione in base al ruolo
+                        if (data.role === 'user'){
                             window.location.href = 'main.html';
                         }
                         else {
@@ -399,6 +462,7 @@
             }
         });
 
+        // Gestione del form di registrazione
         $('#register-form').on('submit', async function (e) {
             e.preventDefault();
 
@@ -441,14 +505,22 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert('Errore durante la registrazione.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Errore',
+                    text: 'Errore durante la registrazione.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#5ea813',
+                    confirmButtonHover: '#4c871c'
+                });
             }
         });
 
         // Gestione del Logout
-        $('#logout').on('click', function(e) {
+        $(document).on('click', '#logout', function(e) {
             e.preventDefault();
             localStorage.removeItem('token');
+            userRole = null; // Resetta il ruolo dell'utente
             Swal.fire({
                 icon: 'success',
                 title: 'Disconnesso',
@@ -458,6 +530,7 @@
                 confirmButtonHover: '#4c871c'
             }).then(() => {
                 updateAuthUI();
+                updateNavMenu(); // Aggiorna il menu di navigazione
                 window.location.href = '/';
             });
         });
@@ -527,8 +600,6 @@
         if (window.location.pathname.endsWith('main.html') && $('#chat-window').length) {
             const token = localStorage.getItem('token');
             if (!token) {
-                alert('Devi effettuare il login per accedere alla chat.');
-                window.location.href = '/';
                 Swal.fire({
                     icon: 'warning',
                     title: 'Autenticazione Necessaria',
@@ -651,7 +722,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Creazione Admin Completata',
-                        text: 'Registrazione admin ' + email + 'effettuata con successo',
+                        text: 'Registrazione admin ' + email + ' effettuata con successo',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#5ea813',
                         confirmButtonHover: '#4c871c'
@@ -687,11 +758,25 @@
                         // Display users in the #result container
                         displayUsers(data);
                     } else {
-                        alert(data.msg || 'Errore durante il recupero degli utenti.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errore',
+                            text: data.msg || 'Errore durante il recupero degli utenti.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#5ea813',
+                            confirmButtonHover: '#4c871c'
+                        });
                     }
                 } catch (err) {
                     console.error(err);
-                    alert('Errore durante il recupero degli utenti.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errore',
+                        text: 'Errore durante il recupero degli utenti.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    });
                 }
             });
 
@@ -711,11 +796,25 @@
                     if (res.ok) {
                         displayUsers(data);
                     } else {
-                        alert(data.msg || 'Errore durante il recupero degli utenti.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errore',
+                            text: data.msg || 'Errore durante il recupero degli utenti.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#5ea813',
+                            confirmButtonHover: '#4c871c'
+                        });
                     }
                 } catch (err) {
                     console.error(err);
-                    alert('Errore durante il recupero degli utenti.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errore',
+                        text: 'Errore durante il recupero degli utenti.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    });
                 }
             });
 
@@ -735,11 +834,25 @@
                     if (res.ok) {
                         renderChart(data);
                     } else {
-                        alert(data.msg || 'Errore durante il recupero delle statistiche.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errore',
+                            text: data.msg || 'Errore durante il recupero delle statistiche.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#5ea813',
+                            confirmButtonHover: '#4c871c'
+                        });
                     }
                 } catch (err) {
                     console.error(err);
-                    alert('Errore durante il recupero delle statistiche.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errore',
+                        text: 'Errore durante il recupero delle statistiche.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
+                    });
                 }
             });
 
@@ -782,7 +895,7 @@
             
                     return rangeArray;
                 }
-            
+        
                 // Function to group data and fill missing dates or months
                 function groupData(data, range) {
                     const isYear = range === 365;
@@ -802,7 +915,7 @@
             
                     return { labels, values };
                 }
-            
+        
                 // Filter data based on the selected time range
                 function filterData(range) {
                     const today = new Date();
@@ -908,14 +1021,36 @@
 
                             const data = await res.json();
                             if (res.ok) {
-                                alert(data.msg || 'Utente eliminato con successo.');
-                                $('#view-users').click(); // Refresh the users list
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Utente Eliminato',
+                                    text: data.msg || 'Utente eliminato con successo.',
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#5ea813',
+                                    confirmButtonHover: '#4c871c'
+                                }).then(() => {
+                                    $('#view-users').click(); // Refresh the users list
+                                });
                             } else {
-                                alert(data.msg || 'Errore durante l\'eliminazione dell\'utente.');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Errore',
+                                    text: data.msg || 'Errore durante l\'eliminazione dell\'utente.',
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#5ea813',
+                                    confirmButtonHover: '#4c871c'
+                                });
                             }
                         } catch (err) {
                             console.error(err);
-                            alert('Errore durante l\'eliminazione dell\'utente.');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Errore',
+                                text: 'Errore durante l\'eliminazione dell\'utente.',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#5ea813',
+                                confirmButtonHover: '#4c871c'
+                            });
                         }
                     }
                 });
