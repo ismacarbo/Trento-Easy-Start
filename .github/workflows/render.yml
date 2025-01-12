@@ -6,6 +6,10 @@ on:
       - main
       - develop
 
+permissions:
+  contents: write
+  deployments: write
+
 env:
   PORT: ${{ secrets.PORT }} 
   MONGO_URI: ${{ secrets.MONGO_URI }}
