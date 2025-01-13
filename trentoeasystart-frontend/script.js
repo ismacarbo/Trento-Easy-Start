@@ -14,16 +14,18 @@
         };
 
         var applyListeners = function applyListeners() {
-            menu.addEventListener('click', function (e) {
-                e.stopPropagation();
-                toggleClass(body, 'nav-active');
-            });
+            if (menu) {
+                menu.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    toggleClass(body, 'nav-active');
+                });
 
-            document.addEventListener('click', function(e) {
-                if (body.classList.contains('nav-active') && !menu.contains(e.target)) {
-                    body.classList.remove('nav-active');
-                }
-            });
+                document.addEventListener('click', function(e) {
+                    if (body.classList.contains('nav-active') && !menu.contains(e.target)) {
+                        body.classList.remove('nav-active');
+                    }
+                });
+            }
         };
 
         var toggleClass = function toggleClass(element, stringClass) {
@@ -704,6 +706,8 @@
                                 body: JSON.stringify({name, email, password})
                             });
 
+                            const data = await res.json();
+
                             if (res.ok){
                                 Swal.fire({
                                     icon: 'success',
@@ -717,7 +721,6 @@
                                 });
                             }
                             else {
-                                const data = await res.json();
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Creazione Admin Fallita',
@@ -742,7 +745,7 @@
                 }
             });
 
-            $('#view').on('click', async function (){
+            $('#view-users').on('click', async function (){
                 try {
                     const token = localStorage.getItem('token');
                     const res = await fetch('/api/auth/users', {
@@ -779,10 +782,6 @@
                 }
             });
 
-            $('#view-users').on('click', async function (){
-                $('#view').click();
-            });
-
             $('#view-chart').on('click', async function () {
                 try {
                     const token = localStorage.getItem('token');
@@ -793,7 +792,7 @@
                             'x-auth-token': token
                         }
                     });
-        
+
                     const data = await res.json();
 
                     if (res.ok) {
@@ -950,7 +949,7 @@
 
                 drawChart(filterData(7), 7);
 
-                $('#time-range').off('change').on('change', function () {
+                $('#time-range').on('change', function () {
                     const range = parseInt($(this).val());
                     drawChart(filterData(range), range);
                 });
