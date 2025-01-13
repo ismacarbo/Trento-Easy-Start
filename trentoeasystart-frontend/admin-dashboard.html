@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Trento Easy Start - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+    <header class="cd-header">
+        <div class="header-wrapper">
+            <div class="left-side">
+                <div class="menu-icon hover-target">
+                    <span class="menu-icon__line menu-icon__line-left"></span>
+                    <span class="menu-icon__line"></span>
+                    <span class="menu-icon__line menu-icon__line-right"></span>
+                </div>
+                <div class="logo-wrap">
+                    <a href="main.html" class="hover-target"><span>Trento</span>Easy Start</a>
+                </div>
+            </div>
+            <div class="multilingua">
+                <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
+                <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
+                <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
+                <a href="#" id="logout" class="hover-target">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="nav">
+        <div class="nav__content">
+            <ul class="nav__list">
+                <li class="nav__list-item"><a href="main.html" class="hover-target">Home</a></li>
+                <li class="nav__list-item"><a href="cerca-alloggio.html" class="hover-target">Cerca Alloggio</a></li>
+                <li class="nav__list-item"><a href="supporto.html" class="hover-target">Supporto</a></li>
+                <li class="nav__list-item"><a href="servizi.html" class="hover-target">Servizi</a></li>
+                <li class="nav__list-item"><a href="eventi.html" class="hover-target">Eventi</a></li>
+                <li class="nav__list-item"><a href="chi-siamo.html" class="hover-target">Chi Siamo</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="home-section">
+            <h1 style = "color: #5ea813">Benvenuto su Trento Easy Start!</h1>
+            <div class="user-info">
+                <p><strong style = "color: #5ea813">Nome:</strong> <span id="user-name-admin">Caricamento...</span></p>
+                <p><strong style = "color: #5ea813">Email:</strong> <span id="user-email-admin">Caricamento...</span></p>
+            </div>
+
+            <button id="admin-create" class="admin-button">Crea admin</button>
+            <button id="view-users" class="admin-button">Utenti</button>
+            <button id="view-chart" class="admin-button">Grafico</button>
+            
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+
+            <div id="result"></div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Trento Easy Start. Tutti i diritti riservati.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Sanità - Trento Easy Start</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <header class="cd-header">
+            <div class="header-wrapper">
+                <div class="left-side">
+                    <div class="menu-icon hover-target">
+                        <span class="menu-icon__line menu-icon__line-left"></span>
+                        <span class="menu-icon__line"></span>
+                        <span class="menu-icon__line menu-icon__line-right"></span>
+                    </div>
+                    <div class="logo-wrap">
+                        <a href="main.html" class="hover-target"><span>Trento</span>Easy Start</a>
+                    </div>
+                </div>
+                <div class="multilingua">
+                    <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
+                    <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
+                    <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
+                    <span id="auth-links"></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="nav">
+            <div class="nav__content">
+                <ul class="nav__list">
+                    <li class="nav__list-item"><a href="main.html" class="hover-target">Home</a></li>
+                    <li class="nav__list-item"><a href="cerca-alloggio.html" class="hover-target">Cerca Alloggio</a></li>
+                    <li class="nav__list-item"><a href="supporto.html" class="hover-target">Supporto</a></li>
+                    <li class="nav__list-item"><a href="servizi.html" class="hover-target">Servizi</a></li>
+                    <li class="nav__list-item"><a href="eventi.html" class="hover-target">Eventi</a></li>
+                    <li class="nav__list-item"><a href="chi-siamo.html" class="hover-target">Chi Siamo</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+            <section class="service-detail-section">
+                <h1 style="color: #5ea813">Sanità</h1>
+                <div class="service-detail-content">
+                    <p>Benvenuto nella sezione Sanità di Trento Easy Start. Qui troverai tutte le informazioni necessarie su ospedali, cliniche e farmacie aperte 24 ore su 24.</p>
+
+                    <h2 id="ospedale-santa-chiara" style="color: #5ea813">Ospedale Santa Chiara</h2>
+                    <p>L'Ospedale Santa Chiara è uno dei principali centri sanitari di Trento, offrendo una vasta gamma di servizi medici.</p>
+                    <ul>
+                        <li><a href="https://www.apss.tn.it/Azienda/Luoghi/Ospedale-Santa-Chiara-di-Trento" target="_blank" style="color: #5ea813; text-decoration: none;" 
+                            onmouseover="this.style.color='#4c871c'" 
+                            onmouseout="this.style.color='#5ea813'">Sito Ufficiale Ospedale Santa Chiara</a></li>
+                        <li>Orari di Apertura: 24 ore su 24</li>
+                        <li>Contatti: +39 0461 123456</li>
+                    </ul>
+
+                    <h2 id="cliniche-private" style="color: #5ea813">Cliniche Private</h2>
+                    <p>Trento offre diverse cliniche private per chi cerca servizi medici avanzati e personalizzati.</p>
+                    <ul>
+                        <li><a href="https://www.villabiancatrento.it/" target="_blank"style="color: #5ea813; text-decoration: none;" 
+                            onmouseover="this.style.color='#4c871c'" 
+                            onmouseout="this.style.color='#5ea813'" >Sito Ufficiale Cliniche Private Trento</a></li>
+                    </ul>
+
+                    <h2 id="farmacie-turno" style="color: #5ea813">Farmacie di Turno</h2>
+                    <p>Le farmacie di turno sono disponibili 24 ore su 24 per fornire farmaci e assistenza medica.</p>
+                    <ul>
+                        <li><a href="https://www.farmaciaditurno.it/" target="_blank"style="color: #5ea813; text-decoration: none;" 
+                            onmouseover="this.style.color='#4c871c'" 
+                            onmouseout="this.style.color='#5ea813'">Sito Ufficiale Farmacie di Turno</a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="script.js"></script>
+        <script>
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        </script>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span>Trento Easy Start. Tutti i diritti riservati.</p>
+    </footer>
+    </body>
+</html>

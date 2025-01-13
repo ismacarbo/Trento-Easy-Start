@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Supporto - Trento Easy Start</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <header class="cd-header">
+            <div class="header-wrapper">
+                <div class="left-side">
+                    <div class="menu-icon hover-target">
+                        <span class="menu-icon__line menu-icon__line-left"></span>
+                        <span class="menu-icon__line"></span>
+                        <span class="menu-icon__line menu-icon__line-right"></span>
+                    </div>
+                    <div class="logo-wrap">
+                        <a href="main.html" class="hover-target"><span>Trento</span>Easy Start</a>
+                    </div>
+                </div>
+                <div class="multilingua">
+                    <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
+                    <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
+                    <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
+                    <span id="auth-links"></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="nav">
+            <div class="nav__content">
+                <ul class="nav__list">
+                    <li class="nav__list-item"><a href="main.html" class="hover-target">Home</a></li>
+                    <li class="nav__list-item"><a href="cerca-alloggio.html" class="hover-target">Cerca Alloggio</a></li>
+                    <li class="nav__list-item"><a href="supporto.html" class="hover-target">Supporto</a></li>
+                    <li class="nav__list-item"><a href="servizi.html" class="hover-target">Servizi</a></li>
+                    <li class="nav__list-item"><a href="eventi.html" class="hover-target">Eventi</a></li>
+                    <li class="nav__list-item"><a href="chi-siamo.html" class="hover-target">Chi Siamo</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+            <section class="support-section">
+                <div class="support-content">
+                    <h2 id="faq">FAQ</h2>
+                    <div class="faq-item">
+                        <button class="accordion">1. Come posso trovare un alloggio a Trento?</button>
+                        <div class="panel">
+                            <p>Puoi cercare alloggi tramite il nostro portale dedicato, contattare agenzie immobiliari locali, oppure consultare bacheche universitarie e gruppi sui social media specifici per studenti.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">2. Quali sono i mezzi di trasporto pubblico disponibili a Trento?</button>
+                        <div class="panel">
+                            <p>Trento dispone di una rete di autobus urbani gestiti da Trentino Trasporti. Inoltre, ci sono servizi di bike-sharing e percorsi pedonali ben sviluppati per muoversi in città.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">3. Come posso ottenere una tessera studentesca per i trasporti pubblici?</button>
+                        <div class="panel">
+                            <p>La tessera studentesca può essere richiesta presso l'ufficio trasporti della tua università o direttamente presso le biglietterie di Trentino Trasporti, presentando la tua tessera studentesca valida.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">4. Dove posso trovare notizie aggiornate sugli eventi a Trento?</button>
+                        <div class="panel">
+                            <p>Sul nostro sito troverai una sezione dedicata alle notizie e agli eventi. Puoi anche seguire i canali social delle principali istituzioni locali e consultare il sito del Comune di Trento.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">5. Esistono applicazioni mobili utili per orientarsi a Trento?</button>
+                        <div class="panel">
+                            <p>Sì, applicazioni come Google Maps, Moovit e l'app ufficiale di Trentino Trasporti ti aiuteranno a navigare la città e pianificare i tuoi spostamenti.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">6. Quali sono i principali punti di interesse da visitare a Trento?</button>
+                        <div class="panel">
+                            <p>Alcuni dei luoghi imperdibili includono il Castello del Buonconsiglio, il Museo di Scienze (MUSE), Piazza Duomo, e il Parco delle Albere.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">7. Come posso iscrivermi alle attività sportive o culturali a Trento?</button>
+                        <div class="panel">
+                            <p>Puoi iscriverti attraverso le associazioni studentesche, i centri sportivi universitari o partecipare a eventi organizzati dal Comune e dall'università.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">8. Dove posso trovare informazioni sui corsi di lingua italiana per stranieri a Trento?</button>
+                        <div class="panel">
+                            <p>L'Università di Trento e centri linguistici locali offrono corsi di italiano per stranieri. Consulta il sito dell'università o contatta l'ufficio internazionale per maggiori dettagli.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">9. Quali sono i migliori quartieri per vivere a Trento come studente?</button>
+                        <div class="panel">
+                            <p>Quartieri come Città Alta, Buonconsiglio e San Pietro sono molto apprezzati dagli studenti per la loro vicinanza all'università e ai servizi.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">10. Come posso ottenere una carta sanitaria se mi trasferisco a Trento?</button>
+                        <div class="panel">
+                            <p>Registrati presso l'Azienda USL di Trento per ottenere la tessera sanitaria. È necessario presentare un documento d'identità, il permesso di soggiorno (se necessario) e la prova di residenza.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">11. Dove posso trovare dispense e materiale didattico per i miei corsi?</button>
+                        <div class="panel">
+                            <p>La biblioteca dell'università e le librerie locali sono ottimi posti per trovare dispense e materiale didattico. Inoltre, molti corsi offrono risorse online accessibili tramite il portale universitario.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">12. Come posso partecipare agli eventi organizzati dall'università?</button>
+                        <div class="panel">
+                            <p>Visita il sito dell'università e iscriviti alla newsletter degli eventi. Puoi anche seguire le pagine social dell'università per rimanere aggiornato sulle iniziative in corso.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">13. Quali sono i servizi di supporto per studenti internazionali a Trento?</button>
+                        <div class="panel">
+                            <p>L'ufficio internazionale dell'università offre supporto per l'immigrazione, orientamento culturale, tutoraggio accademico e attività sociali per facilitare l'integrazione.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">14. Dove posso fare la spesa a Trento con un budget studentesco?</button>
+                        <div class="panel">
+                            <p>Supermercati come Lidl, Eurospin e Conad offrono prezzi convenienti. Inoltre, mercati locali e negozi discount possono aiutarti a risparmiare sulla spesa settimanale.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">15. Come funziona il sistema di raccolta differenziata a Trento?</button>
+                        <div class="panel">
+                            <p>Trento ha un sistema di raccolta differenziata efficiente. I rifiuti devono essere separati in umido, secco, carta e plastica. Puoi trovare i dettagli sul sito del Comune di Trento.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">16. Quali sono i principali luoghi di ritrovo per studenti a Trento?</button>
+                        <div class="panel">
+                            <p>Bar, caffè e spazi comuni come il Centro Studenti offrono luoghi ideali per incontrarsi e socializzare. Alcuni locali popolari includono il Café Terrace e il Bar Età Moderna.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">17. Come posso accedere ai servizi di assistenza sanitaria a Trento?</button>
+                        <div class="panel">
+                            <p>Puedes rivolgerti agli studi medici convenzionati con l'Azienda USL di Trento. L'università offre anche servizi di consulenza psicologica e supporto sanitario per studenti.</p>
+                    </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">18. Quali sono le opzioni di trasporto alternative a Trento, come il car sharing o il bike sharing?</button>
+                        <div class="panel">
+                            <p>Trento offre servizi di bike sharing come Trentino Bike e car sharing tramite aziende locali. Questi servizi sono disponibili tramite app dedicate e offrono opzioni flessibili per gli spostamenti quotidiani.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">19. Dove posso trovare supporto in caso di emergenza a Trento?</button>
+                        <div class="panel">
+                            <p>In caso di emergenza, chiama il numero unico europeo 112. Inoltre, l'università e il Comune di Trento forniscono informazioni sui servizi di emergenza locali.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="accordion">20. Come posso integrare la mia routine accademica con la vita sociale a Trento?</button>
+                        <div class="panel">
+                            <p>Partecipa agli eventi organizzati dall'università, unisciti a club e associazioni studentesche, e sfrutta le opportunità di networking offerte dalla città per bilanciare studio e socializzazione.</p>
+                        </div>
+                    </div>
+
+                    <h2 id="assistenza">Assistenza Clienti</h2>
+                    <p>Il nostro team di assistenza è disponibile 24/7 per aiutarti. Puoi contattarci tramite:</p>
+                    <ul>
+                        <li><i class="fas fa-phone-alt"></i> Telefono: +39 0123 456789</li>
+                        <li><i class="fas fa-envelope"></i> Email: <a href="mailto:assistenza@trentoeasystart.it">assistenza@trentoeasystart.it</a></li>
+                        <li><i class="fas fa-comments"></i> Live Chat: disponibile nell'angolo in basso a destra nella <a href="http://localhost:5001/main.html">pagina principale</a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>&copy; <span id="current-year"></span> Trento Easy Start. Tutti i diritti riservati.</p>
+        </footer>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>

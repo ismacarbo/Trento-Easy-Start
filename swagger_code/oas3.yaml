@@ -1,0 +1,681 @@
+openapi: 3.0.0
+info:
+  title: Trento Easy Start API
+  description: API per gestire le funzionalità di Trento Easy Start, inclusi autenticazione, alloggi, contatti, notizie, eventi e servizi.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Server di sviluppo locale
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        id:
+          type: string
+          description: ID univoco dell'utente
+          example: "60d0fe4f5311236168a109ca"
+        name:
+          type: string
+          description: Nome dell'utente
+          example: "Mario Rossi"
+        email:
+          type: string
+          format: email
+          description: Email dell'utente
+          example: "mario.rossi@example.com"
+        password:
+          type: string
+          format: password
+          description: Password dell'utente
+          example: "password123"
+        date:
+          type: string
+          format: date-time
+          description: Data di registrazione
+          example: "2023-04-05T14:30:00Z"
+
+    Accommodation:
+      type: object
+      required:
+        - title
+        - type
+        - description
+        - location
+        - price
+      properties:
+        id:
+          type: string
+          description: ID univoco dell'alloggio
+          example: "60d0fe4f5311236168a109cb"
+        title:
+          type: string
+          description: Titolo dell'alloggio
+          example: "Appartamento Centrale"
+        type:
+          type: string
+          enum: [Affitti Brevi, Affitti Lunghi, Case Vacanza]
+          description: Tipo di alloggio
+          example: "Affitti Brevi"
+        description:
+          type: string
+          description: Descrizione dell'alloggio
+          example: "Appartamento moderno nel centro di Trento."
+        location:
+          type: string
+          description: Località dell'alloggio
+          example: "Trento, Italia"
+        price:
+          type: number
+          format: float
+          description: Prezzo dell'alloggio
+          example: 750.00
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Elenco di URL delle immagini dell'alloggio
+          example: ["http://example.com/image1.jpg", "http://example.com/image2.jpg"]
+        datePosted:
+          type: string
+          format: date-time
+          description: Data di pubblicazione
+          example: "2024-01-15T10:00:00Z"
+        postedBy:
+          type: string
+          description: ID dell'utente che ha pubblicato l'alloggio
+          example: "60d0fe4f5311236168a109ca"
+
+    Contact:
+      type: object
+      required:
+        - name
+        - email
+        - subject
+        - message
+      properties:
+        id:
+          type: string
+          description: ID univoco del contatto
+          example: "60d0fe4f5311236168a109cc"
+        name:
+          type: string
+          description: Nome del contatto
+          example: "Luigi Bianchi"
+        email:
+          type: string
+          format: email
+          description: Email del contatto
+          example: "luigi.bianchi@example.com"
+        subject:
+          type: string
+          description: Oggetto del messaggio
+          example: "Richiesta Informazioni"
+        message:
+          type: string
+          description: Messaggio del contatto
+          example: "Vorrei avere maggiori informazioni sugli alloggi disponibili."
+        dateSent:
+          type: string
+          format: date-time
+          description: Data di invio del messaggio
+          example: "2024-01-16T09:15:00Z"
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT per l'autenticazione
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    ErrorResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Messaggio di errore
+          example: "Server Error"
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID univoco dell'evento
+          example: "event123"
+        title:
+          type: string
+          description: Titolo dell'evento
+          example: "Concerto Jazz"
+        description:
+          type: string
+          description: Descrizione dell'evento
+          example: "Un concerto di jazz nel centro storico di Trento."
+        date:
+          type: string
+          format: date-time
+          description: Data dell'evento
+          example: "2024-05-20T20:00:00Z"
+        link:
+          type: string
+          format: uri
+          description: Link per maggiori informazioni
+          example: "http://example.com/evento123"
+
+    News:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID univoco della notizia
+          example: "news123"
+        title:
+          type: string
+          description: Titolo della notizia
+          example: "Apertura Nuovo Parco"
+        description:
+          type: string
+          description: Descrizione della notizia
+          example: "Il Comune di Trento ha inaugurato un nuovo parco nel centro città."
+        date:
+          type: string
+          format: date-time
+          description: Data della notizia
+          example: "2024-03-10T12:00:00Z"
+        link:
+          type: string
+          format: uri
+          description: Link per maggiori informazioni
+          example: "http://example.com/notizia123"
+        type:
+          type: string
+          enum: [avviso]
+          description: Tipo di notizia
+          example: "avviso"
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID univoco del servizio
+          example: "service123"
+        title:
+          type: string
+          description: Titolo del servizio
+          example: "Trasporti"
+        description:
+          type: string
+          description: Descrizione del servizio
+          example: "Informazioni sui trasporti pubblici a Trento."
+        category:
+          type: string
+          description: Categoria del servizio
+          example: "Trasporti"
+        link:
+          type: string
+          format: uri
+          description: Link per maggiori informazioni
+          example: "http://example.com/trasporti"
+
+  responses:
+    UnauthorizedError:
+      description: Accesso negato. Token mancante o non valido.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Risorsa non trovata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ServerError:
+      description: Errore del server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /auth/register:
+    post:
+      summary: Registrazione di un nuovo utente
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: "Mario Rossi"
+                email:
+                  type: string
+                  format: email
+                  example: "mario.rossi@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+      responses:
+        '200':
+          description: Utente registrato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Richiesta non valida o utente già registrato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/login:
+    post:
+      summary: Login di un utente
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "mario.rossi@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+      responses:
+        '200':
+          description: Login effettuato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Credenziali non valide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth:
+    get:
+      summary: Ottieni i dati dell'utente autenticato
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dati utente recuperati con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /accommodations:
+    post:
+      summary: Crea un nuovo alloggio
+      tags:
+        - Accommodations
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+      responses:
+        '200':
+          description: Alloggio creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+        '400':
+          description: Richiesta non valida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    get:
+      summary: Ottieni tutti gli alloggi con filtri opzionali
+      tags:
+        - Accommodations
+      parameters:
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: Filtra per località
+          example: "Trento"
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [Affitti Brevi, Affitti Lunghi, Case Vacanza]
+          description: Filtra per tipo di alloggio
+          example: "Affitti Brevi"
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            format: float
+          description: Prezzo minimo
+          example: 500
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            format: float
+          description: Prezzo massimo
+          example: 1500
+      responses:
+        '200':
+          description: Elenco di alloggi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Accommodation'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /accommodations/{id}:
+    get:
+      summary: Ottieni un alloggio per ID
+      tags:
+        - Accommodations
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dell'alloggio
+      responses:
+        '200':
+          description: Dettagli dell'alloggio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      summary: Aggiorna un alloggio per ID
+      tags:
+        - Accommodations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dell'alloggio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Accommodation'
+      responses:
+        '200':
+          description: Alloggio aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accommodation'
+        '400':
+          description: Richiesta non valida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      summary: Elimina un alloggio per ID
+      tags:
+        - Accommodations
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dell'alloggio
+      responses:
+        '200':
+          description: Alloggio eliminato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "Alloggio eliminato"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /contact:
+    post:
+      summary: Invia un messaggio di contatto
+      tags:
+        - Contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+      responses:
+        '200':
+          description: Messaggio inviato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: "Messaggio inviato con successo"
+        '400':
+          description: Richiesta non valida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    get:
+      summary: Ottieni tutti i messaggi di contatto
+      tags:
+        - Contact
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Elenco dei messaggi di contatto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /external-accommodations/fetch:
+    get:
+      summary: Recupera annunci di alloggio esterni con filtri
+      tags:
+        - External Accommodations
+      parameters:
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: Località per la ricerca
+          example: "trento"
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [Affitti Brevi, Affitti Lunghi, Case Vacanza]
+          description: Tipo di alloggio
+          example: "Affitti Brevi"
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+            format: float
+          description: Prezzo minimo
+          example: 500
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+            format: float
+          description: Prezzo massimo
+          example: 1500
+      responses:
+        '200':
+          description: Elenco degli annunci di alloggio esterni
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Accommodation'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /news:
+    get:
+      summary: Ottieni tutte le notizie
+      tags:
+        - News
+      responses:
+        '200':
+          description: Elenco delle notizie
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/News'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /events:
+    get:
+      summary: Ottieni tutti gli eventi
+      tags:
+        - Events
+      responses:
+        '200':
+          description: Elenco degli eventi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /services:
+    get:
+      summary: Ottieni tutti i servizi
+      tags:
+        - Services
+      responses:
+        '200':
+          description: Elenco dei servizi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+security:
+  - BearerAuth: []
