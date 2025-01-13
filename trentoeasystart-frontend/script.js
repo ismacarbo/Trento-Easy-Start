@@ -1,40 +1,42 @@
 (function($) { 
     "use strict";
 
-    // Variabile globale per memorizzare il ruolo dell'utente
+    
     let userRole = null;
 
+    
     var app = function () {
         var body = undefined;
         var menu = undefined;
+
         var init = function init() {
             body = document.querySelector('body');
             menu = document.querySelector('.menu-icon');
             applyListeners();
         };
+
         var applyListeners = function applyListeners() {
             menu.addEventListener('click', function (e) {
                 e.stopPropagation();
-                return toggleClass(body, 'nav-active');
+                toggleClass(body, 'nav-active');
             });
-            // Chiudere il menu se si clicca fuori
+
+            
             document.addEventListener('click', function(e) {
                 if (body.classList.contains('nav-active') && !menu.contains(e.target)) {
                     body.classList.remove('nav-active');
                 }
             });
         };
+
         var toggleClass = function toggleClass(element, stringClass) {
-            if (element.classList.contains(stringClass)) {
-                element.classList.remove(stringClass);
-            } else {
-                element.classList.add(stringClass);
-            }
+            element.classList.toggle(stringClass);
         };
+
         init();
     }();
 
-    // Funzione per ottenere i dati dell'utente (solo in pagine protette)
+    
     const protectedPages = [
         'main.html',
         'index.html',
@@ -49,17 +51,18 @@
         'admin-dashboard.html'
     ];
 
+    
     if (protectedPages.some(page => window.location.pathname.endsWith(page))) { 
         getUserData();
     }
 
-    // Funzione per ottenere i dati dell'utente
+    
     async function getUserData() {
         const token = localStorage.getItem('token');
         const currentPage = window.location.pathname.split('/').pop();
 
         if (!token) {
-            // Solo per le pagine protette, reindirizza se non autenticato
+            
             const requireAuth = [
                 'main.html',
                 'index.html',
@@ -101,9 +104,9 @@
             const data = await res.json();
 
             if (res.ok) {
+                userRole = data.role; 
 
-                userRole = data.role; // Salva il ruolo dell'utente
-
+                
                 if (window.location.pathname.endsWith('main.html')) {
                     $('#user-name').text(data.name);
                     $('#user-email').text(data.email);
@@ -117,9 +120,9 @@
                     $('#user-email-admin').text(data.email);
                 }
 
-                updateNavMenu(); // Aggiorna il menu di navigazione in base al ruolo
+                updateNavMenu(); 
 
-                // **Nuova Aggiunta**: Controllo di accesso per Admin Dashboard
+                
                 if (currentPage === 'admin-dashboard.html' && userRole !== 'admin') {
                     Swal.fire({
                         icon: 'error',
@@ -161,11 +164,11 @@
         }
     }
 
-    // Funzione per aggiornare il menu di navigazione in base al ruolo dell'utente
+    
     function updateNavMenu() {
         const navList = $('.nav__list');
         
-        // Rimuovi eventuali link precedenti all'Admin Dashboard per evitare duplicati
+        
         navList.find('.admin-dashboard-link').remove();
 
         if (userRole === 'admin') {
@@ -178,6 +181,7 @@
         }
     }
 
+    
     if (window.location.pathname.endsWith('notizie.html')) {
         fetchNews();
     }
@@ -262,6 +266,7 @@
         });
     }
 
+    
     if (window.location.pathname.endsWith('eventi.html')) {
         fetchEvents();
     }
@@ -309,9 +314,8 @@
             const events = await res.json();
             console.log('Eventi ricevuti:', events);
 
-            // Filtra gli eventi con data futura o uguale a oggi
+            
             const today = new Date();
-            // Imposta l'ora a 00:00:00 per confronto solo sulla data
             today.setHours(0, 0, 0, 0);
 
             const filteredEvents = events.filter(event => {
@@ -335,7 +339,7 @@
         }
     }
 
-    // Funzione per visualizzare gli eventi nella pagina (centralizzata)
+    
     function displayEvents(events) {
         const eventsList = $('#events-list');
         eventsList.empty();
@@ -358,6 +362,7 @@
         });
     }
 
+    
     function updateAuthUI() {
         const token = localStorage.getItem('token');
         const authLinks = $('.multilingua');
@@ -376,30 +381,29 @@
                 <a href="#" class="hover-target" title="Italiano">🇮🇹</a> |
                 <a href="#" class="hover-target" title="Inglese">🇬🇧</a> |
                 <a href="#" class="hover-target" title="Tedesco">🇩🇪</a>
-                | <a href="#" id="show-login" class="hover-target">Login</a>
-                | <a href="#" id="show-register" class="hover-target">Registrati</a>
             `);
         }
     }
 
+    
     $(document).ready(function () {
         updateAuthUI();
 
-        // Mostra la sezione di registrazione
+        
         $(document).on('click', '#show-register', function (e) {
             e.preventDefault();
             $('.login').removeClass('active');
             $('.register').addClass('active');
         });
 
-        // Mostra la sezione di login
+        
         $(document).on('click', '#show-login', function (e) {
             e.preventDefault();
             $('.register').removeClass('active');
             $('.login').addClass('active');
         });
 
-        // Gestione del form di login
+        
         $('#login-form').on('submit', async function (e) {
             e.preventDefault();
 
@@ -418,9 +422,9 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    // Salva il token nel localStorage
+                    
                     localStorage.setItem('token', data.token);
-                    userRole = data.role; // Salva il ruolo dell'utente
+                    userRole = data.role; 
                     Swal.fire({
                         icon: 'success',
                         title: 'Login Effettuato',
@@ -430,7 +434,7 @@
                         confirmButtonHover: '#4c871c'
                     }).then(() => {
                         updateAuthUI();
-                        updateNavMenu(); // Aggiorna il menu di navigazione in base al ruolo
+                        updateNavMenu(); 
                         if (data.role === 'user'){
                             window.location.href = 'main.html';
                         }
@@ -462,7 +466,7 @@
             }
         });
 
-        // Gestione del form di registrazione
+        
         $('#register-form').on('submit', async function (e) {
             e.preventDefault();
 
@@ -516,11 +520,11 @@
             }
         });
 
-        // Gestione del Logout
+        
         $(document).on('click', '#logout', function(e) {
             e.preventDefault();
             localStorage.removeItem('token');
-            userRole = null; // Resetta il ruolo dell'utente
+            userRole = null; 
             Swal.fire({
                 icon: 'success',
                 title: 'Disconnesso',
@@ -530,16 +534,12 @@
                 confirmButtonHover: '#4c871c'
             }).then(() => {
                 updateAuthUI();
-                updateNavMenu(); // Aggiorna il menu di navigazione
+                updateNavMenu(); 
                 window.location.href = '/';
             });
         });
-    });
 
-
-    // Live Chat Admin dashboard e email support
-    $(document).ready(function() {
-
+        
         if (window.location.pathname.endsWith('chi-siamo.html')){
             $('#feedback-form').on('submit', async function(e){
                 e.preventDefault();
@@ -553,50 +553,65 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Completa tutti i campi',
-                        text: 'Completa tutti i campi e inserendo valori validi',
+                        text: 'Completa tutti i campi inserendo valori validi.',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#5ea813',
                         confirmButtonHover: '#4c871c'
                     });
+                    return; 
                 }
 
-                const res = await fetch('/api/contact/', {
-                    method:'POST',
-                    headers: {
-                        'Content-type': 'application/json'
-                    },
-                    body: JSON.stringify({ name, email, subject, message })
-                });
-
-                if (res.ok){
-                    const data = await res.json();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Messaggio inviato',
-                        text: data.msg,
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#5ea813',
-                        confirmButtonHover: '#4c871c'
+                try {
+                    const res = await fetch('/api/contact/', {
+                        method:'POST',
+                        headers: {
+                            'Content-type': 'application/json'
+                        },
+                        body: JSON.stringify({ name, email, subject, message })
                     });
 
-                    $('#name').val('');
-                    $('#email').val('');
-                    $('#subject').val('');
-                    $('#message').val('');
-                }
-                else {
+                    if (res.ok){
+                        const data = await res.json();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Messaggio inviato',
+                            text: data.msg,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#5ea813',
+                            confirmButtonHover: '#4c871c'
+                        });
+
+                        $('#name').val('');
+                        $('#email').val('');
+                        $('#subject').val('');
+                        $('#message').val('');
+                    }
+                    else {
+                        const data = await res.json();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errore nell\'invio del messaggio',
+                            text: data.msg || 'Si è verificato un errore durante l\'invio del messaggio. Riprova.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#5ea813',
+                            confirmButtonHover: '#4c871c'
+                        });
+                    } 
+                } catch (err) {
+                    console.error(err);
                     Swal.fire({
                         icon: 'error',
-                        title: 'Errore nell\'invio del messaggio',
-                        text: 'Si è verifiato un errore durante l\'invio del message, Riprova.',
+                        title: 'Errore',
+                        text: 'Errore durante l\'invio del messaggio.',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#5ea813',
                         confirmButtonHover: '#4c871c'
                     });
-                } 
+                }
             });
         }
 
+        
         if (window.location.pathname.endsWith('main.html') && $('#chat-window').length) {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -613,7 +628,7 @@
                 return;
             }
 
-            // Inizializza Socket.io con autenticazione
+            
             const socket = io({
                 auth: {
                     token: token
@@ -634,7 +649,6 @@
                 });
             });
 
-
             $('#send-button').on('click', function () {
                 const userMessage = $('#message').val().trim();
 
@@ -654,7 +668,7 @@
 
                 socket.emit('chatMessage', message);
 
-                // Pulisci il campo di input del messaggio
+                
                 $('#message').val('');
             });
 
@@ -672,7 +686,7 @@
                         <span class="text">${msg.text}</span>
                     </div>
                 `);
-                // Scrolla automaticamente in fondo
+                
                 $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
             });
 
@@ -691,60 +705,84 @@
             });
         }
 
-        else if(window.location.pathname.endsWith('admin-dashboard.html')){
-            $('#admin-create').on('click', function() {
-                $('#result').html(
-                `<div id="result">
-                    <h3>Crea un Nuovo Amministratore</h3>
-                    <form id="create-admin-form">
-                        <input type="text" id="admin-name" placeholder="Nome" required>
-                        <input type="email" id="admin-email" placeholder="Email" required>
-                        <input type="password" id="admin-password" placeholder="Password" required>
-                        <button type="submit" id="create-admin-btn">Crea</button>
-                    </form>
-                </div>
-                `) ;
-
-            $('#create-admin-form').on('submit', async function (e){
-                e.preventDefault();
-                
-                const name = $('#admin-name').val();
-                const email = $('#admin-email').val();
-                const password = $('#admin-password').val();
         
-                var res = await fetch('/api/auth/createAdmin', {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json', 'x-auth-token': localStorage.getItem('token')},
-                    body: JSON.stringify({name, email, password})
-                    })
+        if(window.location.pathname.endsWith('admin-dashboard.html')){
+            
+            $('#admin-create').on('click', function() {
+                
+                if ($('#create-admin-form').length === 0) {
+                    $('#result').html(
+                    `<div id="create-admin-section">
+                        <h3>Crea un Nuovo Amministratore</h3>
+                        <form id="create-admin-form">
+                            <input type="text" id="admin-name" placeholder="Nome" required>
+                            <input type="email" id="admin-email" placeholder="Email" required>
+                            <input type="password" id="admin-password" placeholder="Password" required>
+                            <button type="submit" id="create-admin-btn">Crea</button>
+                        </form>
+                    </div>
+                    `) ;
 
-                if (res.ok){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Creazione Admin Completata',
-                        text: 'Registrazione admin ' + email + ' effettuata con successo',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#5ea813',
-                        confirmButtonHover: '#4c871c'
-                    })
+                    $('#create-admin-form').on('submit', async function (e){
+                        e.preventDefault();
+                        
+                        const name = $('#admin-name').val();
+                        const email = $('#admin-email').val();
+                        const password = $('#admin-password').val();
+                
+                        try {
+                            const res = await fetch('/api/auth/createAdmin', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type':'application/json',
+                                    'x-auth-token': localStorage.getItem('token')
+                                },
+                                body: JSON.stringify({name, email, password})
+                            });
+
+                            if (res.ok){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Creazione Admin Completata',
+                                    text: 'Registrazione admin ' + email + ' effettuata con successo.',
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#5ea813',
+                                    confirmButtonHover: '#4c871c'
+                                }).then(() => {
+                                    
+                                    $('#create-admin-form')[0].reset();
+                                });
+                            }
+                            else {
+                                const data = await res.json();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Creazione Admin Fallita',
+                                    text: data.msg || 'Errore durante la creazione dell\'admin.',
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#5ea813',
+                                    confirmButtonHover: '#4c871c'
+                                });
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Errore',
+                                text: 'Errore durante la creazione dell\'admin.',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#5ea813',
+                                confirmButtonHover: '#4c871c'
+                            });
+                        }
+                    });
                 }
-                else {
-                    let data = await res.json();
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Creazione Admin Fallita',
-                        text: data.msg,
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#5ea813',
-                        confirmButtonHover: '#4c871c'
-                    })
-                }
-                });
             });
+
             
             $('#view').on('click', async function (){
                 try {
-                    const token = localStorage.getItem('token'); // Get the token
+                    const token = localStorage.getItem('token'); 
                     const res = await fetch('/api/auth/users', {
                         method: 'GET',
                         headers: {
@@ -752,10 +790,10 @@
                             'x-auth-token': token
                         }
                     });
-    
+
                     const data = await res.json();
                     if (res.ok) {
-                        // Display users in the #result container
+                        
                         displayUsers(data);
                     } else {
                         Swal.fire({
@@ -780,44 +818,12 @@
                 }
             });
 
-
+            
             $('#view-users').on('click', async function (){
-                try {
-                    const token = localStorage.getItem('token'); // Get the token
-                    const res = await fetch('/api/auth/users', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-auth-token': token
-                        }
-                    });
-    
-                    const data = await res.json();
-                    if (res.ok) {
-                        displayUsers(data);
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Errore',
-                            text: data.msg || 'Errore durante il recupero degli utenti.',
-                            confirmButtonText: 'OK',
-                            confirmButtonColor: '#5ea813',
-                            confirmButtonHover: '#4c871c'
-                        });
-                    }
-                } catch (err) {
-                    console.error(err);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Errore',
-                        text: 'Errore durante il recupero degli utenti.',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#5ea813',
-                        confirmButtonHover: '#4c871c'
-                    });
-                }
+                $('#view').click(); 
             });
 
+            
             $('#view-chart').on('click', async function () {
                 try {
                     const token = localStorage.getItem('token');
@@ -856,21 +862,27 @@
                 }
             });
 
-
+            
             function renderChart(data) {
-                const chartContainer = `
-                    <div>
-                        <h3>Grafico degli Utenti Iscritti</h3>
-                        <select id="time-range">
-                            <option value="7">Ultima Settimana</option>
-                            <option value="30">Ultimo Mese</option>
-                            <option value="365">Ultimo Anno</option>
-                        </select>
-                        <canvas id="registration-chart"></canvas>
-                    </div>
-                `;
-                $('#result').html(chartContainer);
-        
+                
+                if ($('#registration-chart').length === 0) {
+                    const chartContainer = `
+                        <div class="chart-container" style="width: 100%; height: 400px;">
+                            <h3>Grafico degli Utenti Iscritti</h3>
+                            <div class="select-container">
+                                <select id="time-range" class="styled-select">
+                                    <option value="7">Ultima Settimana</option>
+                                    <option value="30">Ultimo Mese</option>
+                                    <option value="365">Ultimo Anno</option>
+                                </select>
+                            </div>
+                            <canvas id="registration-chart" style="width: 100%; height: 100%;"></canvas>
+                        </div>
+                    `;
+                    $('#result').html(chartContainer);
+                }
+
+                
                 function generateRange(range, interval = 'day') {
                     const today = new Date();
                     const rangeArray = [];
@@ -879,24 +891,25 @@
                     if (interval === 'day') {
                         startDate.setDate(today.getDate() - range + 1);
                         while (startDate <= today) {
-                            rangeArray.push(startDate.toISOString().split('T')[0]); // YYYY-MM-DD
+                            rangeArray.push(startDate.toISOString().split('T')[0]); 
                             startDate.setDate(startDate.getDate() + 1);
                         }
                     } else if (interval === 'month') {
-                        startDate.setMonth(today.getMonth() - (range / 30 - 1));
+                        const months = Math.ceil(range / 30);
+                        startDate.setMonth(today.getMonth() - months + 1);
                         startDate.setDate(1);
                         while (startDate <= today) {
                             const year = startDate.getFullYear();
                             const month = String(startDate.getMonth() + 1).padStart(2, '0');
-                            rangeArray.push(`${year}-${month}`); // YYYY-MM
+                            rangeArray.push(`${year}-${month}`); 
                             startDate.setMonth(startDate.getMonth() + 1);
                         }
                     }
             
                     return rangeArray;
                 }
-        
-                // Function to group data and fill missing dates or months
+
+                
                 function groupData(data, range) {
                     const isYear = range === 365;
                     const fullRange = generateRange(range, isYear ? 'month' : 'day');
@@ -905,8 +918,8 @@
                     data.forEach(item => {
                         const date = new Date(item._id);
                         let key = isYear
-                            ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` // YYYY-MM
-                            : item._id; // YYYY-MM-DD
+                            ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` 
+                            : item._id; 
                         grouped[key] = (grouped[key] || 0) + item.count;
                     });
             
@@ -916,7 +929,7 @@
                     return { labels, values };
                 }
         
-                // Filter data based on the selected time range
+                
                 function filterData(range) {
                     const today = new Date();
                     const filtered = data.filter(d => {
@@ -928,10 +941,10 @@
                     return groupData(filtered, range);
                 }
         
-                // Draw chart
+                
                 function drawChart(filteredData, range) {
                     const ctx = document.getElementById('registration-chart').getContext('2d');
-                    if (window.registrationChart) window.registrationChart.destroy(); // Destroy the old chart
+                    if (window.registrationChart) window.registrationChart.destroy(); 
                     window.registrationChart = new Chart(ctx, {
                         type: 'line',
                         data: {
@@ -942,37 +955,57 @@
                                 borderColor: 'rgba(75, 192, 192, 1)',
                                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                                 borderWidth: 2,
+                                pointRadius: 3,
+                                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                                pointHoverRadius: 5,
                             }]
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false, 
                             scales: {
                                 x: {
-                                    title: { display: true, text: range === 365 ? 'Mese' : 'Data' }
+                                    title: { display: true, text: range === 365 ? 'Mese' : 'Data' },
+                                    ticks: {
+                                        autoSkip: true,
+                                        maxTicksLimit: 20
+                                    }
                                 },
                                 y: {
                                     title: { display: true, text: 'Numero di Utenti' },
                                     beginAtZero: true,
                                     ticks: {
-                                            stepSize: 1,
-                                            callback: function(value) {
-                                                return Number.isInteger(value) ? value : null;
-                                            }
+                                        stepSize: 1,
+                                        callback: function(value) {
+                                            return Number.isInteger(value) ? value : null;
+                                        }
                                     }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    enabled: true
                                 }
                             }
                         }
-                    } );
+                    });
                 }
 
+                
                 drawChart(filterData(7), 7);
 
-                $('#time-range').on('change', function () {
+                
+                $('#time-range').off('change').on('change', function () {
                     const range = parseInt($(this).val());
                     drawChart(filterData(range), range);
                 });
             }
 
+            
             function displayUsers(users) {
                 let table = `
                     <h3>Elenco Utenti</h3>
@@ -994,7 +1027,6 @@
                             <td>${user.email}</td>
                             <td>${user.role}</td>
                             <td><button class="remove-user-btn" data-email="${user.email}">Rimuovi</button></td>
-
                         </tr>
                     `;
                 });
@@ -1004,98 +1036,111 @@
                 `;
                 $('#result').html(table);
 
-
-                // Rimuovi utente
-                $('.remove-user-btn').on('click', async function () {
+                
+                $('.remove-user-btn').off('click').on('click', async function () {
                     const userEmail = $(this).data('email');
-                    if (confirm(`Sei sicuro di voler eliminare l'utente ${userEmail}?`)) {
-                        try {
-                            const token = localStorage.getItem('token');
-                            const res = await fetch(`/api/auth/users/${userEmail}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'x-auth-token': token
-                                }
-                            });
-
-                            const data = await res.json();
-                            if (res.ok) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Utente Eliminato',
-                                    text: data.msg || 'Utente eliminato con successo.',
-                                    confirmButtonText: 'OK',
-                                    confirmButtonColor: '#5ea813',
-                                    confirmButtonHover: '#4c871c'
-                                }).then(() => {
-                                    $('#view-users').click(); // Refresh the users list
+                    
+                    
+                    Swal.fire({
+                        title: 'Sei sicuro?',
+                        text: `Sei sicuro di voler eliminare l'utente ${userEmail}?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Si, elimina!',
+                        cancelButtonText: 'No, annulla',
+                        confirmButtonColor: '#5ea813',
+                        cancelButtonColor: '#d33',
+                        reverseButtons: true
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const token = localStorage.getItem('token');
+                                const res = await fetch(`/api/auth/users/${userEmail}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'x-auth-token': token
+                                    }
                                 });
-                            } else {
+
+                                const data = await res.json();
+                                if (res.ok) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Utente Eliminato',
+                                        text: data.msg || 'Utente eliminato con successo.',
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#5ea813',
+                                        confirmButtonHover: '#4c871c'
+                                    }).then(() => {
+                                        $('#view-users').click(); 
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Errore',
+                                        text: data.msg || 'Errore durante l\'eliminazione dell\'utente.',
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#5ea813',
+                                        confirmButtonHover: '#4c871c'
+                                    });
+                                }
+                            } catch (err) {
+                                console.error(err);
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Errore',
-                                    text: data.msg || 'Errore durante l\'eliminazione dell\'utente.',
+                                    text: 'Errore durante l\'eliminazione dell\'utente.',
                                     confirmButtonText: 'OK',
                                     confirmButtonColor: '#5ea813',
                                     confirmButtonHover: '#4c871c'
                                 });
                             }
-                        } catch (err) {
-                            console.error(err);
+                        } else if (
+                            
+                            result.dismiss === Swal.DismissReason.cancel
+                        ) {
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Errore',
-                                text: 'Errore durante l\'eliminazione dell\'utente.',
+                                icon: 'info',
+                                title: 'Azione Annullata',
+                                text: 'L\'utente non è stato eliminato.',
                                 confirmButtonText: 'OK',
                                 confirmButtonColor: '#5ea813',
                                 confirmButtonHover: '#4c871c'
                             });
                         }
-                    }
+                    });
                 });
             }
         }
-    });
 
-    document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        $('#current-year').text(new Date().getFullYear());
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var map = L.map('map').setView([46.074722, 11.121111], 13);
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            var map = L.map('map').setView([46.074722, 11.121111], 13);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+            L.tileLayer('https:
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-        var currentControl = null;
+            var currentControl = null;
 
-        var routeInfo = document.getElementById('route-info');
-        var routeTime = document.getElementById('route-time');
+            var routeInfo = document.getElementById('route-info');
+            var routeTime = document.getElementById('route-time');
 
-        document.getElementById('route-form').addEventListener('submit', function (e) {
-            e.preventDefault();
+            $('#route-form').on('submit', function (e) {
+                e.preventDefault();
 
-            var start = document.getElementById('start').value.trim();
-            var destination = document.getElementById('destination').value.trim();
+                var start = $('#start').val().trim();
+                var destination = $('#destination').val().trim();
 
-            if (!start || !destination) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Input Mancante',
-                    text: 'Per favore, inserisci sia la posizione di partenza che la destinazione.',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#5ea813',
-                    confirmButtonHover: '#4c871c'
-                });
-                return;
-            }
-
-            geocodeLocation(start + ', Trento, Italia').then(function (startLatLng) {
-                if (!startLatLng) {
+                if (!start || !destination) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Posizione Non Trovata',
-                        text: 'Posizione di partenza non trovata.',
+                        icon: 'warning',
+                        title: 'Input Mancante',
+                        text: 'Per favore, inserisci sia la posizione di partenza che la destinazione.',
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#5ea813',
                         confirmButtonHover: '#4c871c'
@@ -1103,12 +1148,12 @@
                     return;
                 }
 
-                geocodeLocation(destination + ', Trento, Italia').then(function (endLatLng) {
-                    if (!endLatLng) {
+                geocodeLocation(start + ', Trento, Italia').then(function (startLatLng) {
+                    if (!startLatLng) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Posizione Non Trovata',
-                            text: 'Destinazione non trovata.',
+                            text: 'Posizione di partenza non trovata.',
                             confirmButtonText: 'OK',
                             confirmButtonColor: '#5ea813',
                             confirmButtonHover: '#4c871c'
@@ -1116,107 +1161,124 @@
                         return;
                     }
 
-                    if (currentControl) {
-                        map.removeControl(currentControl);
-                    }
-
-                    var profile = 'driving';
-
-                    currentControl = L.Routing.control({
-                        waypoints: [
-                            L.latLng(startLatLng[0], startLatLng[1]),
-                            L.latLng(endLatLng[0], endLatLng[1])
-                        ],
-                        routeWhileDragging: true,
-                        geocoder: L.Control.Geocoder.nominatim(),
-                        router: L.Routing.osrmv1({
-                            serviceUrl: 'https://router.project-osrm.org/route/v1',
-                            profile: profile
-                        }),
-                        showAlternatives: false,
-                        lineOptions: {
-                            styles: [{ color: '#5ea813', weight: 5 }]
-                        },
-                        addWaypoints: false,
-                        draggableWaypoints: false,
-                        fitSelectedRoutes: true
-                    }).addTo(map);
-
-                    currentControl.on('routesfound', function (e) {
-                        var routes = e.routes;
-                        if (routes.length > 0) {
-                            var route = routes[0];
-                            var totalTime = route.summary.totalTime;
-                            var formattedTime = formatTime(totalTime);
-                            routeTime.textContent = formattedTime;
-                            routeInfo.style.display = 'block';
+                    geocodeLocation(destination + ', Trento, Italia').then(function (endLatLng) {
+                        if (!endLatLng) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Posizione Non Trovata',
+                                text: 'Destinazione non trovata.',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#5ea813',
+                                confirmButtonHover: '#4c871c'
+                            });
+                            return;
                         }
+
+                        if (currentControl) {
+                            map.removeControl(currentControl);
+                        }
+
+                        var profile = 'driving';
+
+                        currentControl = L.Routing.control({
+                            waypoints: [
+                                L.latLng(startLatLng[0], startLatLng[1]),
+                                L.latLng(endLatLng[0], endLatLng[1])
+                            ],
+                            routeWhileDragging: true,
+                            geocoder: L.Control.Geocoder.nominatim(),
+                            router: L.Routing.osrmv1({
+                                serviceUrl: 'https:
+                                profile: profile
+                            }),
+                            showAlternatives: false,
+                            lineOptions: {
+                                styles: [{ color: '#5ea813', weight: 5 }]
+                            },
+                            addWaypoints: false,
+                            draggableWaypoints: false,
+                            fitSelectedRoutes: true
+                        }).addTo(map);
+
+                        currentControl.on('routesfound', function (e) {
+                            var routes = e.routes;
+                            if (routes.length > 0) {
+                                var route = routes[0];
+                                var totalTime = route.summary.totalTime;
+                                var formattedTime = formatTime(totalTime);
+                                routeTime.textContent = formattedTime;
+                                routeInfo.style.display = 'block';
+                            }
+                        });
+                    });
+                }).catch(function (error) {
+                    console.error('Errore nella geocodifica:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errore',
+                        text: 'Si è verificato un errore durante la geocodifica delle posizioni.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#5ea813',
+                        confirmButtonHover: '#4c871c'
                     });
                 });
-            }).catch(function (error) {
-                console.error('Errore nella geocodifica:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Errore',
-                    text: 'Si è verificato un errore durante la geocodifica delle posizioni.',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#5ea813',
-                    confirmButtonHover: '#4c871c'
-                });
             });
-        });
 
-        async function geocodeLocation(address) {
-            try {
-                const response = await axios.get('https://nominatim.openstreetmap.org/search', {
-                    params: {
-                        q: address,
-                        format: 'json',
-                        limit: 1
+            
+            async function geocodeLocation(address) {
+                try {
+                    const response = await axios.get('https:
+                        params: {
+                            q: address,
+                            format: 'json',
+                            limit: 1
+                        }
+                    });
+                    if (response.data && response.data.length > 0) {
+                        return [parseFloat(response.data[0].lat), parseFloat(response.data[0].lon)];
+                    } else {
+                        return null;
                     }
-                });
-                if (response.data && response.data.length > 0) {
-                    return [parseFloat(response.data[0].lat), parseFloat(response.data[0].lon)];
-                } else {
+                } catch (error) {
+                    console.error('Errore durante la richiesta di geocodifica:', error);
                     return null;
                 }
-            } catch (error) {
-                console.error('Errore durante la richiesta di geocodifica:', error);
-                return null;
             }
-        }
 
-        function formatTime(totalSeconds) {
-            var hours = Math.floor(totalSeconds / 3600);
-            var minutes = Math.floor((totalSeconds % 3600) / 60);
-            var seconds = Math.floor(totalSeconds % 60);
-            var formatted = '';
-            if (hours > 0) {
-                formatted += hours + 'h ';
-            }
-            if (minutes > 0) {
-                formatted += minutes + 'm ';
-            }
-            if (seconds > 0 && hours === 0) {
-                formatted += seconds + 's';
-            }
-            return formatted.trim();
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var acc = document.getElementsByClassName("accordion");
-        for (var i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function () {
-                this.classList.toggle("active");
-                var panel = this.nextElementSibling;
-                if (panel.style.display === "block") {
-                    panel.style.display = "none";
-                } else {
-                    panel.style.display = "block";
+            
+            function formatTime(totalSeconds) {
+                var hours = Math.floor(totalSeconds / 3600);
+                var minutes = Math.floor((totalSeconds % 3600) / 60);
+                var seconds = Math.floor(totalSeconds % 60);
+                var formatted = '';
+                if (hours > 0) {
+                    formatted += hours + 'h ';
                 }
-            });
-        }
+                if (minutes > 0) {
+                    formatted += minutes + 'm ';
+                }
+                if (seconds > 0 && hours === 0) {
+                    formatted += seconds + 's';
+                }
+                return formatted.trim();
+            }
+        });
+
+        
+        $(document).ready(function () {
+            var acc = document.getElementsByClassName("accordion");
+            for (var i = 0; i < acc.length; i++) {
+                acc[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                    } else {
+                        panel.style.display = "block";
+                    }
+                });
+            }
+        });
     });
 
-})(jQuery);
+    })(jQuery);

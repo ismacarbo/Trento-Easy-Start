@@ -3,30 +3,42 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { sendMessage } = require('../services/telegramService');
 
-
+/**
+ * Registrazione di un nuovo utente.
+ * Invia una notifica al bot Telegram dopo la registrazione.
+ */
 exports.register = async (req, res) => {
-    const { name, email, password, role} = req.body;
+    const { name, email, password, role } = req.body;
 
+    // Validazione dei campi richiesti
     if (!name || !email || !password) {
         return res.status(400).json({ msg: 'Per favore, inserisci tutti i campi.' });
     }
 
+    // Validazione del ruolo (se fornito)
     if (role && role !== 'user' && role !== 'admin') {
         return res.status(400).json({ msg: 'Ruolo non valido.' });
     }
 
-    if (role === 'admin' && req.user && await User.findById(req.user.id).select('-password').role !== 'admin') {
-        return res.status(400).json({ msg: 'Non hai i permessi per registrare un amministratore.' });
+    // Controllo dei permessi per la registrazione di un admin
+    if (role === 'admin') {
+        if (!req.user) {
+            return res.status(401).json({ msg: 'Autenticazione necessaria per creare un admin.' });
+        }
+        const requestingUser = await User.findById(req.user.id).select('-password');
+        if (requestingUser.role !== 'admin') {
+            return res.status(400).json({ msg: 'Non hai i permessi per registrare un amministratore.' });
+        }
     }
 
     try {
-
+        // Controllo se l'utente esiste già
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ msg: 'Utente già registrato.' });
         }
 
-
+        // Creazione del nuovo utente
         user = new User({
             role: role || 'user',
             name,
@@ -34,14 +46,14 @@ exports.register = async (req, res) => {
             password
         });
 
-
+        // Hash della password
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
 
-
+        // Salvataggio dell'utente nel database
         await user.save();
 
-
+        // Creazione del payload per il token JWT
         const payload = {
             user: {
                 id: user.id,
@@ -49,6 +61,7 @@ exports.register = async (req, res) => {
             }
         };
 
+        // Generazione del token JWT
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
@@ -57,8 +70,8 @@ exports.register = async (req, res) => {
                 if (err) throw err;
                 res.json({ token });
 
-
-                const message = `📢 Nuovo Utente Registrato:\n\nNome: ${name}\nEmail: ${email}\nData: ${new Date().toLocaleString('it-IT')}`;
+                // Invio della notifica Telegram
+                const message = `📢 *Nuovo Utente Registrato*\n\n**Nome:** ${name}\n**Email:** ${email}\n**Data:** ${new Date().toLocaleString('it-IT')}`;
                 sendMessage(message);
             }
         );
@@ -69,28 +82,32 @@ exports.register = async (req, res) => {
     }
 };
 
-
+/**
+ * Login di un utente.
+ * Invia una notifica al bot Telegram dopo il login.
+ */
 exports.login = async (req, res) => {
-    const { email, password} = req.body;
+    const { email, password } = req.body;
 
-
+    // Validazione dei campi richiesti
     if (!email || !password) {
         return res.status(400).json({ msg: 'Per favore, inserisci tutti i campi.' });
     }
 
     try {
-
+        // Ricerca dell'utente nel database
         let user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ msg: 'Credenziali non valide.' });
         }
 
-
+        // Verifica della password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ msg: 'Credenziali non valide.' });
         }
 
+        // Creazione del payload per il token JWT
         const payload = {
             user: {
                 id: user.id,
@@ -100,16 +117,17 @@ exports.login = async (req, res) => {
 
         console.log('User data:', user);
 
+        // Generazione del token JWT
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
             { expiresIn: '1h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ "token": token, "role": user.role});
+                res.json({ "token": token, "role": user.role });
 
-
-                const message = `🔑 Utente Effettua il Login:\n\nEmail: ${email}\nData: ${new Date().toLocaleString('it-IT')}`;
+                // Invio della notifica Telegram
+                const message = `🔑 *Utente Effettua il Login*\n\n**Email:** ${email}\n**Data:** ${new Date().toLocaleString('it-IT')}`;
                 sendMessage(message);
             }
         );
@@ -120,7 +138,9 @@ exports.login = async (req, res) => {
     }
 };
 
-
+/**
+ * Ottiene i dati dell'utente autenticato.
+ */
 exports.getUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
@@ -131,33 +151,43 @@ exports.getUser = async (req, res) => {
     }
 };
 
+/**
+ * Crea un nuovo amministratore.
+ * Invia una notifica al bot Telegram dopo la creazione di un admin.
+ */
 exports.createAdmin = async (req, res) => {
     const { name, email, password } = req.body;
 
+    // Validazione dei campi richiesti
     if (!name || !email || !password) {
-        console.log(name, email, password)
-        return res.status(400).json({msd: 'Errore nei campi inseriti'});
-    }
-
-    const user = await User.findById(req.user.id).select('-password');
-
-    if (user.role !== 'admin') {
-        return res.status(403).json({ msg: 'Accesso negato. Solo gli admin possono creare altri admin.' });
+        console.log(name, email, password);
+        return res.status(400).json({ msg: 'Errore nei campi inseriti.' });
     }
 
     try {
-        let user = await User.findOne({ email });
-        if (user && user.role == 'admin') {
+        // Recupero dell'utente che effettua la richiesta
+        const requestingUser = await User.findById(req.user.id).select('-password');
+
+        // Controllo dei permessi
+        if (requestingUser.role !== 'admin') {
+            return res.status(403).json({ msg: 'Accesso negato. Solo gli admin possono creare altri admin.' });
+        }
+
+        // Ricerca dell'utente per email
+        let existingUser = await User.findOne({ email });
+
+        if (existingUser && existingUser.role === 'admin') {
             return res.status(400).json({ msg: 'Utente già registrato come admin.' });
-        }
+        } else if (existingUser && existingUser.role === 'user') {
+            existingUser.role = 'admin';
+            await existingUser.save();
+            res.json({ msg: `Ruolo dell'utente ${existingUser.email} aggiornato a admin.` });
 
-        else if(user && user.role == 'user'){
-            user.role = 'admin';
-            await user.save()
-            res.json({ msg: 'Ruolo Utente Aggiornato.' });
-        }
-
-        else {
+            // Invio della notifica Telegram
+            const message = `👑 *Amministratore Creato*\n\n**Nome:** ${existingUser.name}\n**Email:** ${existingUser.email}\n**Creato da:** ${requestingUser.name}\n**Data:** ${new Date().toLocaleString('it-IT')}`;
+            sendMessage(message);
+        } else {
+            // Creazione di un nuovo admin
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -170,6 +200,10 @@ exports.createAdmin = async (req, res) => {
 
             await newAdmin.save();
             res.json({ msg: 'Amministratore creato con successo.' });
+
+            // Invio della notifica Telegram
+            const message = `👑 *Amministratore Creato*\n\n**Nome:** ${name}\n**Email:** ${email}\n**Creato da:** ${requestingUser.name}\n**Data:** ${new Date().toLocaleString('it-IT')}`;
+            sendMessage(message);
         }
 
     } catch (error) {
@@ -178,7 +212,9 @@ exports.createAdmin = async (req, res) => {
     }
 };
 
-
+/**
+ * Ottiene tutti gli utenti (solo per admin).
+ */
 exports.getAllUsers = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
@@ -186,16 +222,18 @@ exports.getAllUsers = async (req, res) => {
         if (!user || user.role !== 'admin') {
             return res.status(403).json({ msg: 'Accesso negato. Solo gli amministratori possono visualizzare gli utenti.' });
         }
-        const users = await User.find().select('-password'); 
+        const users = await User.find().select('-password');
         res.json(users);
-
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ msg: 'Errore del server.' });
     }
 };
 
-
+/**
+ * Elimina un utente (solo per admin).
+ * Invia una notifica al bot Telegram dopo la rimozione.
+ */
 exports.deleteUser = async (req, res) => {
     try {
         const requestingUser = await User.findById(req.user.id).select('-password');
@@ -204,13 +242,18 @@ exports.deleteUser = async (req, res) => {
         }
 
         const email = req.params.id;
-        console.log(email)
-        const user = await User.findOne({email});
+        console.log(`Richiesta di eliminazione utente: ${email}`);
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ msg: 'Utente non trovato.' });
         }
 
-        await User.deleteOne({email});
+        await User.deleteOne({ email });
+
+        // Invio della notifica Telegram
+        const removalMessage = `🗑️ *Utente Eliminato*\n\n**Nome:** ${user.name}\n**Email:** ${user.email}\n**Eliminato da:** ${requestingUser.name}\n**Data:** ${new Date().toLocaleString('it-IT')}`;
+        sendMessage(removalMessage);
+
         res.json({ msg: `Utente ${email} eliminato con successo.` });
     } catch (err) {
         console.error(err.message);
@@ -218,7 +261,9 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-
+/**
+ * Ottiene le statistiche di registrazione degli utenti (solo per admin).
+ */
 exports.getUserRegistrationStats = async (req, res) => {
     try {
         const requestingUser = await User.findById(req.user.id).select('-password');
@@ -233,7 +278,7 @@ exports.getUserRegistrationStats = async (req, res) => {
                     count: { $sum: 1 }
                 }
             },
-            { $sort: { _id: 1 } } 
+            { $sort: { _id: 1 } }
         ]);
 
         res.json(stats);
@@ -242,4 +287,3 @@ exports.getUserRegistrationStats = async (req, res) => {
         res.status(500).json({ msg: 'Errore del server.' });
     }
 };
-
