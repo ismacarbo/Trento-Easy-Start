@@ -1,10 +1,8 @@
 (function($) { 
     "use strict";
 
-    
     let userRole = null;
 
-    
     var app = function () {
         var body = undefined;
         var menu = undefined;
@@ -21,7 +19,6 @@
                 toggleClass(body, 'nav-active');
             });
 
-            
             document.addEventListener('click', function(e) {
                 if (body.classList.contains('nav-active') && !menu.contains(e.target)) {
                     body.classList.remove('nav-active');
@@ -36,7 +33,6 @@
         init();
     }();
 
-    
     const protectedPages = [
         'main.html',
         'index.html',
@@ -51,18 +47,15 @@
         'admin-dashboard.html'
     ];
 
-    
     if (protectedPages.some(page => window.location.pathname.endsWith(page))) { 
         getUserData();
     }
 
-    
     async function getUserData() {
         const token = localStorage.getItem('token');
         const currentPage = window.location.pathname.split('/').pop();
 
         if (!token) {
-            
             const requireAuth = [
                 'main.html',
                 'index.html',
@@ -104,9 +97,8 @@
             const data = await res.json();
 
             if (res.ok) {
-                userRole = data.role; 
+                userRole = data.role;
 
-                
                 if (window.location.pathname.endsWith('main.html')) {
                     $('#user-name').text(data.name);
                     $('#user-email').text(data.email);
@@ -120,9 +112,8 @@
                     $('#user-email-admin').text(data.email);
                 }
 
-                updateNavMenu(); 
+                updateNavMenu();
 
-                
                 if (currentPage === 'admin-dashboard.html' && userRole !== 'admin') {
                     Swal.fire({
                         icon: 'error',
@@ -164,11 +155,8 @@
         }
     }
 
-    
     function updateNavMenu() {
         const navList = $('.nav__list');
-        
-        
         navList.find('.admin-dashboard-link').remove();
 
         if (userRole === 'admin') {
@@ -181,7 +169,6 @@
         }
     }
 
-    
     if (window.location.pathname.endsWith('notizie.html')) {
         fetchNews();
     }
@@ -228,7 +215,6 @@
 
             const news = await res.json();
             console.log('Notizie ricevute:', news);
-
             displayNews(news);
         } catch (err) {
             console.error(err);
@@ -266,7 +252,6 @@
         });
     }
 
-    
     if (window.location.pathname.endsWith('eventi.html')) {
         fetchEvents();
     }
@@ -314,7 +299,6 @@
             const events = await res.json();
             console.log('Eventi ricevuti:', events);
 
-            
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -339,7 +323,6 @@
         }
     }
 
-    
     function displayEvents(events) {
         const eventsList = $('#events-list');
         eventsList.empty();
@@ -362,7 +345,6 @@
         });
     }
 
-    
     function updateAuthUI() {
         const token = localStorage.getItem('token');
         const authLinks = $('.multilingua');
@@ -385,25 +367,21 @@
         }
     }
 
-    
     $(document).ready(function () {
         updateAuthUI();
 
-        
         $(document).on('click', '#show-register', function (e) {
             e.preventDefault();
             $('.login').removeClass('active');
             $('.register').addClass('active');
         });
 
-        
         $(document).on('click', '#show-login', function (e) {
             e.preventDefault();
             $('.register').removeClass('active');
             $('.login').addClass('active');
         });
 
-        
         $('#login-form').on('submit', async function (e) {
             e.preventDefault();
 
@@ -422,9 +400,8 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    
                     localStorage.setItem('token', data.token);
-                    userRole = data.role; 
+                    userRole = data.role;
                     Swal.fire({
                         icon: 'success',
                         title: 'Login Effettuato',
@@ -434,7 +411,7 @@
                         confirmButtonHover: '#4c871c'
                     }).then(() => {
                         updateAuthUI();
-                        updateNavMenu(); 
+                        updateNavMenu();
                         if (data.role === 'user'){
                             window.location.href = 'main.html';
                         }
@@ -442,7 +419,6 @@
                             window.location.href = 'admin-dashboard.html';
                         }
                     });
-                    
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -466,7 +442,6 @@
             }
         });
 
-        
         $('#register-form').on('submit', async function (e) {
             e.preventDefault();
 
@@ -520,11 +495,10 @@
             }
         });
 
-        
         $(document).on('click', '#logout', function(e) {
             e.preventDefault();
             localStorage.removeItem('token');
-            userRole = null; 
+            userRole = null;
             Swal.fire({
                 icon: 'success',
                 title: 'Disconnesso',
@@ -534,12 +508,11 @@
                 confirmButtonHover: '#4c871c'
             }).then(() => {
                 updateAuthUI();
-                updateNavMenu(); 
+                updateNavMenu();
                 window.location.href = '/';
             });
         });
 
-        
         if (window.location.pathname.endsWith('chi-siamo.html')){
             $('#feedback-form').on('submit', async function(e){
                 e.preventDefault();
@@ -558,7 +531,7 @@
                         confirmButtonColor: '#5ea813',
                         confirmButtonHover: '#4c871c'
                     });
-                    return; 
+                    return;
                 }
 
                 try {
@@ -611,7 +584,6 @@
             });
         }
 
-        
         if (window.location.pathname.endsWith('main.html') && $('#chat-window').length) {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -628,7 +600,6 @@
                 return;
             }
 
-            
             const socket = io({
                 auth: {
                     token: token
@@ -665,10 +636,7 @@
                 }
 
                 const message = `@bot ${userMessage}`;
-
                 socket.emit('chatMessage', message);
-
-                
                 $('#message').val('');
             });
 
@@ -686,7 +654,6 @@
                         <span class="text">${msg.text}</span>
                     </div>
                 `);
-                
                 $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
             });
 
@@ -705,11 +672,8 @@
             });
         }
 
-        
         if(window.location.pathname.endsWith('admin-dashboard.html')){
-            
             $('#admin-create').on('click', function() {
-                
                 if ($('#create-admin-form').length === 0) {
                     $('#result').html(
                     `<div id="create-admin-section">
@@ -749,7 +713,6 @@
                                     confirmButtonColor: '#5ea813',
                                     confirmButtonHover: '#4c871c'
                                 }).then(() => {
-                                    
                                     $('#create-admin-form')[0].reset();
                                 });
                             }
@@ -779,10 +742,9 @@
                 }
             });
 
-            
             $('#view').on('click', async function (){
                 try {
-                    const token = localStorage.getItem('token'); 
+                    const token = localStorage.getItem('token');
                     const res = await fetch('/api/auth/users', {
                         method: 'GET',
                         headers: {
@@ -793,7 +755,6 @@
 
                     const data = await res.json();
                     if (res.ok) {
-                        
                         displayUsers(data);
                     } else {
                         Swal.fire({
@@ -818,12 +779,10 @@
                 }
             });
 
-            
             $('#view-users').on('click', async function (){
-                $('#view').click(); 
+                $('#view').click();
             });
 
-            
             $('#view-chart').on('click', async function () {
                 try {
                     const token = localStorage.getItem('token');
@@ -862,9 +821,7 @@
                 }
             });
 
-            
             function renderChart(data) {
-                
                 if ($('#registration-chart').length === 0) {
                     const chartContainer = `
                         <div class="chart-container" style="width: 100%; height: 400px;">
@@ -882,16 +839,15 @@
                     $('#result').html(chartContainer);
                 }
 
-                
                 function generateRange(range, interval = 'day') {
                     const today = new Date();
                     const rangeArray = [];
                     const startDate = new Date(today);
-            
+
                     if (interval === 'day') {
                         startDate.setDate(today.getDate() - range + 1);
                         while (startDate <= today) {
-                            rangeArray.push(startDate.toISOString().split('T')[0]); 
+                            rangeArray.push(startDate.toISOString().split('T')[0]);
                             startDate.setDate(startDate.getDate() + 1);
                         }
                     } else if (interval === 'month') {
@@ -901,35 +857,33 @@
                         while (startDate <= today) {
                             const year = startDate.getFullYear();
                             const month = String(startDate.getMonth() + 1).padStart(2, '0');
-                            rangeArray.push(`${year}-${month}`); 
+                            rangeArray.push(`${year}-${month}`);
                             startDate.setMonth(startDate.getMonth() + 1);
                         }
                     }
-            
+
                     return rangeArray;
                 }
 
-                
                 function groupData(data, range) {
                     const isYear = range === 365;
                     const fullRange = generateRange(range, isYear ? 'month' : 'day');
-            
+
                     const grouped = {};
                     data.forEach(item => {
                         const date = new Date(item._id);
                         let key = isYear
-                            ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` 
-                            : item._id; 
+                            ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+                            : item._id;
                         grouped[key] = (grouped[key] || 0) + item.count;
                     });
-            
+
                     const labels = fullRange;
                     const values = labels.map(label => grouped[label] || 0);
-            
+
                     return { labels, values };
                 }
-        
-                
+
                 function filterData(range) {
                     const today = new Date();
                     const filtered = data.filter(d => {
@@ -937,14 +891,13 @@
                         const diffInDays = (today - registrationDate) / (1000 * 60 * 60 * 24);
                         return diffInDays <= range;
                     });
-            
+
                     return groupData(filtered, range);
                 }
-        
-                
+
                 function drawChart(filteredData, range) {
                     const ctx = document.getElementById('registration-chart').getContext('2d');
-                    if (window.registrationChart) window.registrationChart.destroy(); 
+                    if (window.registrationChart) window.registrationChart.destroy();
                     window.registrationChart = new Chart(ctx, {
                         type: 'line',
                         data: {
@@ -962,7 +915,7 @@
                         },
                         options: {
                             responsive: true,
-                            maintainAspectRatio: false, 
+                            maintainAspectRatio: false,
                             scales: {
                                 x: {
                                     title: { display: true, text: range === 365 ? 'Mese' : 'Data' },
@@ -995,17 +948,14 @@
                     });
                 }
 
-                
                 drawChart(filterData(7), 7);
 
-                
                 $('#time-range').off('change').on('change', function () {
                     const range = parseInt($(this).val());
                     drawChart(filterData(range), range);
                 });
             }
 
-            
             function displayUsers(users) {
                 let table = `
                     <h3>Elenco Utenti</h3>
@@ -1036,11 +986,9 @@
                 `;
                 $('#result').html(table);
 
-                
                 $('.remove-user-btn').off('click').on('click', async function () {
                     const userEmail = $(this).data('email');
-                    
-                    
+
                     Swal.fire({
                         title: 'Sei sicuro?',
                         text: `Sei sicuro di voler eliminare l'utente ${userEmail}?`,
@@ -1073,7 +1021,7 @@
                                         confirmButtonColor: '#5ea813',
                                         confirmButtonHover: '#4c871c'
                                     }).then(() => {
-                                        $('#view-users').click(); 
+                                        $('#view-users').click();
                                     });
                                 } else {
                                     Swal.fire({
@@ -1097,7 +1045,6 @@
                                 });
                             }
                         } else if (
-                            
                             result.dismiss === Swal.DismissReason.cancel
                         ) {
                             Swal.fire({
@@ -1114,14 +1061,12 @@
             }
         }
 
-        
         $('#current-year').text(new Date().getFullYear());
 
-        
         document.addEventListener('DOMContentLoaded', function () {
             var map = L.map('map').setView([46.074722, 11.121111], 13);
 
-            L.tileLayer('https:
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
@@ -1188,7 +1133,7 @@
                             routeWhileDragging: true,
                             geocoder: L.Control.Geocoder.nominatim(),
                             router: L.Routing.osrmv1({
-                                serviceUrl: 'https:
+                                serviceUrl: 'https://router.project-osrm.org/route/v1',
                                 profile: profile
                             }),
                             showAlternatives: false,
@@ -1224,10 +1169,9 @@
                 });
             });
 
-            
             async function geocodeLocation(address) {
                 try {
-                    const response = await axios.get('https:
+                    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
                         params: {
                             q: address,
                             format: 'json',
@@ -1245,7 +1189,6 @@
                 }
             }
 
-            
             function formatTime(totalSeconds) {
                 var hours = Math.floor(totalSeconds / 3600);
                 var minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -1264,7 +1207,6 @@
             }
         });
 
-        
         $(document).ready(function () {
             var acc = document.getElementsByClassName("accordion");
             for (var i = 0; i < acc.length; i++) {
@@ -1281,4 +1223,4 @@
         });
     });
 
-    })(jQuery);
+})(jQuery);
